@@ -4,11 +4,11 @@ http =  require 'http'
 https = require 'https'
 path = require 'path'
 fs = require 'fs'
-io = require 'socket.io'
 utils = require 'lodash'
 expressJwt = require 'express-jwt'
 mongoose = require 'mongoose'
 library = require './library'
+socket = library.socket
 
 GLOBAL.config = require './config'
 
@@ -37,9 +37,7 @@ app.use express.logger('dev')
 app.use express.json()
 app.use express.urlencoded()
 app.use express.methodOverride()
-app.use express.cookieParser()
 app.use express.bodyParser()
-app.use express.session({ secret: 'keyboard cat' })
 
 # static files
 app.use paths.bower
@@ -61,7 +59,6 @@ routes = require('./route_map')(app)
 server = http.createServer(app)
 httpsServer = https.createServer(credentials, app);
 
-
 ## start servers
 # https
 httpsServer.listen 3001, () =>
@@ -71,19 +68,4 @@ httpsServer.listen 3001, () =>
 server.listen app.get('port'), () =>
   console.log 'Express server listening on port ' + app.get('port')
 
-# socket.io
-io = io.listen server
-io.set 'log level', 1
-
-
-# New client joining
-io.sockets.on 'connection', (socket) ->
-  address = socket.handshake.address
-  client_ip = address.address
-
-  socket.on 'ready', ->
-    id = client_ip
-  
-    socket.emit 'attach-client', 
-      id: id
-
+socket(server)

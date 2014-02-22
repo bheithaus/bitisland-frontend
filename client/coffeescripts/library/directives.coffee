@@ -37,12 +37,17 @@ angular.module 'gryfter.directives', []
     # Update when charts data changes
     $scope.$watch (-> $scope.chartData), (value) ->
       return if not value
-      #  We need deep copy in order to NOT override original chart object.
-      #  This allows us to override chart data member and still the keep
-      #  our original renderTo will be the same
+
+      # handle live updating
+      updater = $scope.chartData.updater
+      delete $scope.chartData.updater
+
       newSettings = {}
       angular.extend(newSettings, chartsDefaults, $scope.chartData)
 
+      if updater
+        newSettings.chart.events = 
+          load: updater
       console.log newSettings
 
       chart = new Highcharts.StockChart newSettings

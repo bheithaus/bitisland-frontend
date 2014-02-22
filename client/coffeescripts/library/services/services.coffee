@@ -8,10 +8,13 @@ angular.module 'gryfter.services'
 .factory 'User', ($resource) ->
   $resource '/register'
 
+.service 'socket', (UserSession) ->
+  io.connect window.location.origin, { query: 'token=' + UserSession.loggedIn() }
+
 .service 'UserSession', (Session, $cookieStore, $window) ->
   current = $window.sessionStorage.token
   
-  user = 
+  session = 
     login: (user) ->
       $window.sessionStorage.token = user.token
       current = user.token
