@@ -1,0 +1,58 @@
+# /* Controllers */
+angular.module 'gryfter.controllers'
+
+.controller 'ChartCtrl', ($scope, $http) ->
+  # handle login modal error here
+  $scope.chartData = DATA
+
+
+
+DATA =
+  "title": {
+    "text": "Israel love Iran"
+  },
+  "subtitle": {
+    "text": "Source: <a href=\"https://www.facebook.com/israellovesiran\">Israel loves iran on fb</a>"
+  },
+  "xAxis": {
+    "labels": {}
+  },
+  "tooltip": {},
+  "plotOptions": {
+    "area": {
+      "pointStart": 1940,
+      "marker": {
+        "enabled": false,
+        "symbol": "circle",
+        "radius": 2,
+        "states": {
+          "hover": {
+            "enabled": true
+          }
+        }
+      }
+    }
+  },
+  "series": [
+    {
+      "name": "Israel",
+      "data": [
+        400,
+        194,
+        301,
+        130,
+        300
+      ]
+    },
+    {
+      "name": "Iran",
+      "data": [
+        123,
+        325,
+        120,
+        300,
+        300
+      ]
+    }
+    ]
+}

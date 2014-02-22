@@ -88,6 +88,5 @@ module.exports =
             token: token
 
   logout: (req, res) ->
-    req.logout()
     res.json { ok: true }
 

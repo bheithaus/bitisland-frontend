@@ -24,7 +24,7 @@ app = express()
 
 # helper
 paths =
-  bower:  express.static path.join(__dirname, '/bower_components')
+  bower:  express.static path.join(__dirname, '/app/bower_components')
   public: express.static path.join(__dirname, '/public')
 
 #  all environments

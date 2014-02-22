@@ -12,7 +12,8 @@
     "angular-ui-router": "0.2.8-bowratic-tedium",
     "bootstrap": "~3.1.1",
     "jquery": "~2.1.0",
-    "lodash": "~2.4.1"
+    "lodash": "~2.4.1",
+    "angular-highcharts-directive": "*"
   },
   "devDependencies": {}
 }
