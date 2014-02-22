@@ -1,19 +1,17 @@
 # /* Controllers */
 angular.module 'gryfter.controllers'
 
-.controller 'LoginInstanceCtrl', ($scope, $modalInstance, Auth, $state) ->
+.controller 'RegisterInstanceCtrl', ($scope, $modalInstance, $state, Auth) ->
   $scope.user = {}
 
-  $scope.login = () ->
-    Auth.login 'password',
-      name: $scope.user.name
-      password: $scope.user.password
-    , (error) ->
-      if not error
+  $scope.register = () ->
+    Auth.create $scope.user, (errors) ->
+      if not errors
         $modalInstance.dismiss()
         $state.transitionTo 'home'
-      else 
-        $scope.error = error
+      else
+        for field, error of errors
+          $scope[field + '_error'] = error
 
   $scope.cancel = () ->
     $modalInstance.dismiss 'cancel'

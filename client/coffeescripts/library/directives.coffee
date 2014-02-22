@@ -26,24 +26,27 @@ angular.module 'gryfter.directives', []
   transclude: true
   replace: true
 
-  link:  (scope, element, attrs) ->
+  link:  ($scope, element, attrs) ->
     chartsDefaults =
       chart:
         renderTo: element[0]
         type: attrs.type || null
         height: attrs.height || null
         width: attrs.width || null
-    
+
     # Update when charts data changes
-    scope.$watch (-> scope.chartData), (value) ->
+    $scope.$watch (-> $scope.chartData), (value) ->
       return if not value
       #  We need deep copy in order to NOT override original chart object.
       #  This allows us to override chart data member and still the keep
       #  our original renderTo will be the same
       newSettings = {}
-      angular.extend(newSettings, chartsDefaults, scope.chartData)
-      chart = new Highcharts.Chart newSettings
-    });
+      angular.extend(newSettings, chartsDefaults, $scope.chartData)
+
+      console.log newSettings
+
+      chart = new Highcharts.StockChart newSettings
+    )
 
 
 

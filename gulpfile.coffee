@@ -31,6 +31,7 @@ vendor_js =
   vendor:
     base: './public/vendor/'
     dependencies: [
+      'highstock.js'
       'ui-bootstrap-tpls-0.10.0.js'
     ]
 
@@ -46,6 +47,7 @@ path =
       client:[
         client_base + 'config/*.coffee'
         client_base + 'library/controllers/*.coffee'
+        client_base + 'library/services/*.coffee'
         client_base + 'library/*.coffee'
         client_base + '*.coffee'
       ]

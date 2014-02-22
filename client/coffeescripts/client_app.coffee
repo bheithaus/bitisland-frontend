@@ -20,21 +20,11 @@ gryfter = angular.module 'gryfter', [
       templateUrl: 'partials/home'
       controller: 'HomeCtrl'
 
-    .state 'create',
-      url: '/create'
-      templateUrl: 'partials/entity/create'
-      controller: 'CreateCtrl'
+    .state 'trade',
+      url: '/trade'
+      templateUrl: 'partials/trade'
+      controller: 'TradeCtrl'
       authenticate: true
-
-    .state 'list',
-      url: '/entities'
-      templateUrl: 'partials/entity/list'
-      controller: 'ListCtrl'
-
-    .state 'show',
-      url: '/entities/:id'
-      templateUrl: 'partials/entity/show'
-      controller: 'ShowCtrl'
 
     .state 'login',
       # templateUrl: 'partials/session/login'
