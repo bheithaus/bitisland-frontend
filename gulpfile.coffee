@@ -14,15 +14,15 @@ concat = includeG 'concat'
 # Paths
 vendor_js = 
   bower:
-    base: './bower_components/'
+    base: './app/bower_components/'
     dependencies: [
       'angular/angular.js'
       'angular-ui-router/release/angular-ui-router.js'
       'angular-cookies/angular-cookies.js'
       'angular-resource/angular-resource.js'
 
-      'jquery/jquery.min.js'
-      'bootstrap/dist/js/bootstrap.js'
+      'jquery/dist/jquery.min.js'
+      # 'bootstrap/dist/js/bootstrap.js'
       'lodash/dist/lodash.js'
       'socket.io/socket.io.js"'
     ]
@@ -51,11 +51,8 @@ path =
       ]
       server: './**.coffee'
     }
+
     dest: './public/javascripts'
-
-
-
-
 
 
 # Functions
