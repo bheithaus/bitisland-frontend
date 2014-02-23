@@ -16,7 +16,7 @@ concat = includeG 'concat'
 # Paths
 vendor_js = 
   bower:
-    base: './app/bower_components/'
+    base: './bower_components/'
     dependencies: [
       'angular/angular.js'
       'angular-ui-router/release/angular-ui-router.js'
