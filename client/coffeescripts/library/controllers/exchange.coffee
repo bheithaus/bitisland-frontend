@@ -15,9 +15,9 @@ angular.module 'BI.controllers'
     { timestamp: 'thurs 2014', position: 'buy', price: 1134, visible: 20000, tif: 30320 }
   ]
 
-  socket.on 'update_order_book', (data) ->
+  socket.on 'update_pending_book', (data) ->
     console.log 'heres the order book', data
-    if data
+    if data and data.orders and data.orders.length
       $scope.$apply ->
         $scope.exchanges = data.orders
 

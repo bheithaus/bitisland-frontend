@@ -1,22 +1,31 @@
 
 
 // Colors
-disabled_color = hsl(0,0%,40%);
+disabled_color = hsl(0,0%,20%);
 background_light_blue = #0082C7
 background_medium_blue = #005FC7
 
 // Parent Classes
 .card {
   padding: 10px;
-  border: 1px #898989 solid;
+  border: 1px hsla(0,0%,100%,0.2) solid;
   -webkit-box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
   box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
 }
 
 .table-card {
-  border: 1px #898989 solid;
+  border: 1px hsla(0,0%,100%,0.2) solid;
   -webkit-box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
   box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15); 
+}
+
+.blue-gradient {
+  background: #005FC7; 
+  background: -webkit-linear-gradient(#56bafb,hsl(200,60%,48%)); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#56bafb,hsl(200,60%,48%)); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#56bafb,hsl(200,60%,48%)); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#56bafb,hsl(200,60%,48%)); /* Standard syntax */
+  color: #CCCCCC;
 }
 
 body {
@@ -33,7 +42,7 @@ html {
   margin-top: 51px;
 }
 
-@media(min-width:767px) {
+@media (min-width:767px) {
   .navbar {
     padding: 0;
     -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
@@ -53,8 +62,11 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
     font-size: 18px;
   }
 
-  button.btn-success {
-    margin-top: 10px;
+  a.btn {
+    line-height: 20px;
+    padding: 6px 12px;
+    color: #fff;
+    margin-top: 8px;
   }
 }
 
@@ -62,18 +74,31 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   height: 60px;
   margin-top: -15px;
   margin-right: 10px;
+  opacity: 0.968;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.btn {
+  &.btn-success {
+    background: green;
+  }
+
+  &.btn-danger {
+    background: red;
+  }
+
+  &.btn-warning {
+    background: hsl(40,100%,50%);
+  }
 }
 
 .ticker-section {
-  padding: 10px;
-  text-align: left;
+  @extend .blue-gradient 
+  padding: 10px 35px;
   font-size: 1.2em; 
-  background: #005FC7; 
-  background: -webkit-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(#56bafb, #49b4fa, #03439a); /* Standard syntax */
-  color: #CCCCCC;
 }
 
 .contents-section {
@@ -90,10 +115,12 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
 
   .table {
     thead {
-      background: hsl(0,0%,30%);
+      background: hsl(0,0%,21%);
 
       th {
+        text-transform: uppercase;
         font-size: 12px;
+        border-bottom: 1px solid hsl(0,0%,26%);
       }
     }
 
@@ -108,6 +135,8 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
     }
 
     td {
+      padding-top: 10px;
+      border-top: 1px solid hsla(0,0%,100%,0.1);
       font-size: 11px;
     }
   }
@@ -122,17 +151,24 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   }
 }
 
-.price-chart, .purchase {
+.price-chart {
   @extend .card
 }
 
 .purchase {
-  > div.disabled {
-    color: disabled_color;
+  @extend .card
 
-    input {
-      background-color: disabled_color;
+  select {
+    background: grey;
+    color: black;
+
+    &:last-of-type {
+      text-transform: uppercase;
     }
+  }
+
+  input[disabled="disabled"] {
+    background-color: disabled_color;
   }
 }
 
@@ -145,9 +181,12 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
 }
 
 .footer {
-  height: 60px;
+  @extend .blue-gradient
   width: 100%;    
-  padding: 20px;
-  background: background_light_blue;
-  color: #CCCCCC;
+  padding: 5px 35px;
+  color: black;
+
+  p {
+    margin: 0
+  }
 }

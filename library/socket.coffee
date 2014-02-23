@@ -22,9 +22,11 @@ module.exports = (server) ->
       if Math.random() > 0.3
         socket.emit 'update_graph'
 
-      routes.orders.get (data) ->
-        socket.emit 'update_order_book', data.body
-
+      routes.orders.pending (data) ->
+        socket.emit 'update_pending_book', data.body
+      
+      routes.orders.completed (data) ->
+        socket.emit 'update_completed_book', data.body
 
     update()
     setInterval update, 2000

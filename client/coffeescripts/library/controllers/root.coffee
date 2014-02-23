@@ -18,4 +18,3 @@ angular.module 'BI.controllers'
 
   $scope.user = UserSession
 
-

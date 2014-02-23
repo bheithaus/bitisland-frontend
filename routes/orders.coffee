@@ -6,13 +6,18 @@ ORDER =
   defaults:
     symbol: 'bitcoin'
     market: 'bti'
-    visible: 250
     tif: 'day'
     price: 0
 
-module.exports = 
-  get: (callback) ->
+module.exports =
+  pending: (callback) ->
     unirest.get ORDER.base + 'latest_orders'
+      .end (data) ->
+        # console.log 'response from flask', data.body
+        callback data
+
+  completed: (callback) ->
+    unirest.get ORDER.base + 'completed_orders'
       .end (data) ->
         # console.log 'response from flask', data.body
         callback data
@@ -20,7 +25,18 @@ module.exports =
   create: (req, res) ->
     # create new order { type: 'market', quantity: 100, position: 'buy' }
     order = {}
+
+    console.log 'from frontend', req.body
+
+    if req.body.type == 'market'
+      delete req.body.price
+
+    if req.body.type == 'hidden'
+      req.body.visible = 0
+
     order = utils.extend(order, ORDER.defaults, req.body, { userid: req.user.id })
+
+    console.log 'submitting order ', order
 
     unirest.get ORDER.base + 'new_order'
       .query order

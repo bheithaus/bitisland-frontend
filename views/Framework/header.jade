@@ -8,18 +8,21 @@ nav.navbar.navbar-default.navbar-inverse.navbar-fixed-top(role='navigation')
         span.icon-bar
         span.icon-bar
 
-      a.navbar-brand(href='/')
+      a.navbar-brand(href='{{ loggedIn() ? "/trade" : "/home" }}')
         img(src='/logo.png')
 
     // Collect the nav links, forms, and other content for toggling
     div#mobile-header.collapse.navbar-collapse
       ul.nav.navbar-nav
         li
-          a(href='/trade') Trade
+          a.btn.btn-primary(href='/trade') Trade
+
+        li
+          a(href='/trade') on The Net's Safest Maker Taker Exchange.
 
       ul.nav.navbar-nav.navbar-right
         li(ng-hide="loggedIn()")
-          button.btn.btn-success(ng-click="register()") Sign Up
+          a.btn.btn-success(ng-click="register()") Sign Up
 
         li(ng-hide="loggedIn()")
           a(ng-click="login()") Login
