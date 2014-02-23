@@ -4,11 +4,14 @@ window.myapp_constants = {
 
 angular.module('BI.controllers', []);
 
-angular.module('BI.controllers').controller('AccountCtrl', function($scope, $http, UserSession, socket, selectedCurrency) {
+angular.module('BI.controllers').controller('AccountCtrl', function($scope, $http, UserSession, socket, selectedCurrency, LatestTrade) {
   $scope.displayCurrency = selectedCurrency.value;
   selectedCurrency.change(function() {
     return $scope.displayCurrency = selectedCurrency.value;
   });
+  $scope.up = function(price) {
+    return price >= $scope.latestPrice;
+  };
   $scope.exchanges = [
     {
       timestamp: 'thurs 2014',
@@ -36,11 +39,18 @@ angular.module('BI.controllers').controller('AccountCtrl', function($scope, $htt
       tif: 30320
     }
   ];
-  return socket.on('update_account_orders', function(data) {
-    console.log('heres the account book', data);
-    if (data) {
+  return socket.on('update_completed_book', function(data) {
+    if (data && data.orders && data.orders.length) {
       return $scope.$apply(function() {
-        return $scope.exchanges = data.orders;
+        var i;
+        $scope.latestPrice = null;
+        i = 0;
+        while (!($scope.latestPrice || i === data.orders.length)) {
+          $scope.latestPrice = data.orders[i].price;
+          i++;
+        }
+        LatestTrade.set($scope.latestPrice);
+        return $scope.exchanges = data.orders.slice(0, 7);
       });
     }
   });
@@ -58,9 +68,7 @@ angular.module('BI.controllers').controller('ChartCtrl', function($scope, $http,
     });
   };
   $scope.chartData = chart;
-  return socket.on('connect', function() {}).on('disconnect', function() {
-    return console.log('disconnected');
-  });
+  return socket.on('update_chart', function(data) {});
 });
 
 randomBox = function(t) {
@@ -148,9 +156,8 @@ angular.module('BI.controllers').controller('ExchangeCtrl', function($scope, $ht
       tif: 30320
     }
   ];
-  return socket.on('update_order_book', function(data) {
-    console.log('heres the order book', data);
-    if (data) {
+  return socket.on('update_pending_book', function(data) {
+    if (data && data.orders && data.orders.length) {
       return $scope.$apply(function() {
         return $scope.exchanges = data.orders;
       });
@@ -162,9 +169,7 @@ angular.module('BI.controllers').controller('ExchangeCtrl', function($scope, $ht
     return $scope.currencies = choices;
   });
   return $scope.$watch('selected', function(selected, oldSelected) {
-    console.log('selected', selected, oldSelected);
     if (selected && (selected.code || currencyChoices.obj[selected.toUpperCase()])) {
-      console.log('passed test', selected);
       if (selected.code) {
         selectedCurrency.set(selected);
       } else {
@@ -221,30 +226,48 @@ angular.module('BI.controllers').controller('LogoutCtrl', function($scope, $http
 });
 
 angular.module('BI.controllers').controller('OrderCtrl', function($scope, Order, currentOrder, selectedCurrency) {
-  var setOrder;
-  $scope.activeOrderType = 'market';
+  var prop, setOrder, _i, _len, _ref;
+  $scope.orderType = 'market';
+  $scope.orderTypes = ['market', 'limit', 'sell_short', 'stop', 'iceberg', 'hidden'];
+  $scope.tif = 'day';
+  $scope.tifTypes = ['day', 'gtc', 'fok', 'tif'];
+  $scope.market = 'bti';
+  $scope.marketTypes = ['bti', 'mtgox', 'bitstamp', 'btce'];
   $scope.displayCurrency = selectedCurrency.value;
   selectedCurrency.change(function() {
     return $scope.displayCurrency = selectedCurrency.value;
   });
   setOrder = function() {
     return currentOrder.set({
-      type: $scope.activeOrderType,
+      type: $scope.orderType,
       price: $scope.price,
-      quantity: $scope.quantity
+      quantity: $scope.quantity,
+      visible: $scope.visible,
+      tif: $scope.tif,
+      market: $scope.market
     });
   };
-  $scope.$watch('price', setOrder);
-  $scope.$watch('type', setOrder);
-  $scope.$watch('quantity', setOrder);
-  $scope.focus = function(type) {
-    return $scope.activeOrderType = type;
+  _ref = ['price', 'orderType', 'quantity', 'tif', 'market', 'visible'];
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    prop = _ref[_i];
+    $scope.$watch(prop, setOrder);
+  }
+  $scope.$watch('quantity', function(val) {
+    if (!$scope.visibleEdited) {
+      return $scope.visible = val;
+    }
+  });
+  $scope.editVisible = function() {
+    return $scope.visibleEdited = true;
   };
-  return $scope.activeOrder = function(type) {
-    if ($scope.activeOrderType !== type) {
-      return 'disabled';
+  $scope.selected = function(type) {
+    return $scope.orderType = type;
+  };
+  return $scope.active = function(type) {
+    if ($scope.orderType === type) {
+      return true;
     } else {
-      return '';
+      return false;
     }
   };
 }).controller('PurchaseCtrl', function($scope, $http, Order, currentOrder) {
@@ -316,6 +339,41 @@ angular.module('BI.controllers').controller('AppCtrl', function($scope, $locatio
   return $scope.user = UserSession;
 });
 
+angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http, UserSession, socket, selectedCurrency, LatestTrade) {
+  $scope.displayCurrency = selectedCurrency.value;
+  selectedCurrency.change(function() {
+    return $scope.displayCurrency = selectedCurrency.value;
+  });
+  $scope.up = function(price) {
+    return price >= $scope.latestPrice;
+  };
+  $scope.ticker = {
+    ask: 0,
+    bid: 0,
+    last_trade: 0
+  };
+  $scope.$watch(LatestTrade.get, function(val) {
+    return $scope.latestPrice = val;
+  });
+  return socket.on('update_ticker', function(data) {
+    if (data) {
+      return $scope.$apply(function() {
+        var key, val, _results;
+        _results = [];
+        for (key in data) {
+          val = data[key];
+          if (val && val.price) {
+            _results.push($scope.ticker[key] = val.price);
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      });
+    }
+  });
+});
+
 angular.module('BI.controllers').controller('TradeCtrl', function($scope, $http, $location, LoginModal, User) {
   return $scope.name = 'hey derr';
 });
@@ -356,6 +414,17 @@ angular.module('BI.services').factory('Session', function($resource) {
   return io.connect(window.location.origin, {
     query: 'token=' + UserSession.loggedIn()
   });
+}).service('LatestTrade', function() {
+  var latest;
+  latest = {};
+  return {
+    set: function(data) {
+      return latest = data;
+    },
+    get: function() {
+      return latest;
+    }
+  };
 }).service('UserSession', function($window) {
   var current, session;
   current = $window.sessionStorage.token;
@@ -447,7 +516,6 @@ angular.module('BI.services').factory('Session', function($resource) {
       return currentOrder;
     },
     set: function(order) {
-      console.log('set to ', order);
       return currentOrder = order;
     }
   };
@@ -461,7 +529,6 @@ angular.module('BI.services').factory('Session', function($resource) {
       name: 'United States Dollars'
     },
     set: function(selection) {
-      console.log('set to', selection);
       selectedCurrency.value = selection;
       return this.notify();
     },
@@ -501,6 +568,7 @@ angular.module('BI.services').factory('Session', function($resource) {
       currency.rate = xRate;
       if (CURRENCY_NAMES[code]) {
         currency.name = CURRENCY_NAMES[code].currency;
+        currency.sym = CURRENCY_NAMES[code].symbol;
         currency.code = code;
         completedCurrencyChoices.array.push(currency);
         completedCurrencyChoices.obj[code] = currency;
@@ -511,6 +579,7 @@ angular.module('BI.services').factory('Session', function($resource) {
     }
     currencyChoices.array = completedCurrencyChoices.array;
     currencyChoices.obj = completedCurrencyChoices.obj;
+    console.log('CURREncy', currencyChoices);
     currencyChoices.notify();
     return selectedCurrency.set(USD);
   }).error(function(data) {
@@ -527,494 +596,613 @@ angular.module('BI.services').factory('Session', function($resource) {
 });
 
 CURRENCY_NAMES = {
-  'AED': {
-    currency: "United Arab Emirates Dirham"
+  AED: {
+    currency: 'United Arab Emirates Dirham',
+    symbol: 'AED'
   },
-  'AFN': {
-    currency: "Afghanistan Afghani"
+  AFN: {
+    currency: 'Afghanistan Afghani',
+    symbol: 'Af'
   },
-  'ALL': {
-    currency: "Albania Lek"
+  ALL: {
+    currency: 'Albania Lek',
+    symbol: 'ALL'
   },
-  'AMD': {
-    currency: "Armenia Dram"
+  AMD: {
+    currency: 'Armenia Dram',
+    symbol: 'AMD'
   },
-  'ANG': {
-    currency: "Netherlands Antilles Guilder"
+  ANG: {
+    currency: 'Netherlands Antilles Guilder'
   },
-  'AOA': {
-    currency: "Angola Kwanza"
+  AOA: {
+    currency: 'Angola Kwanza'
   },
-  'ARS': {
-    currency: "Argentina Peso"
+  ARS: {
+    currency: 'Argentina Peso',
+    symbol: 'AR$'
   },
-  'AUD': {
-    currency: "Australia Dollar"
+  AUD: {
+    currency: 'Australia Dollar',
+    symbol: 'AU$'
   },
-  'AWG': {
-    currency: "Aruba Guilder"
+  AWG: {
+    currency: 'Aruba Guilder'
   },
-  'AZN': {
-    currency: "Azerbaijan New Manat"
+  AZN: {
+    currency: 'Azerbaijan New Manat',
+    symbol: 'man.'
   },
-  'BAM': {
-    currency: "Bosnia and Herzegovina Convertible Marka"
+  BAM: {
+    currency: 'Bosnia and Herzegovina Convertible Marka',
+    symbol: 'KM'
   },
-  'BBD': {
-    currency: "Barbados Dollar"
+  BBD: {
+    currency: 'Barbados Dollar'
   },
-  'BDT': {
-    currency: "Bangladesh Taka"
+  BDT: {
+    currency: 'Bangladesh Taka',
+    symbol: 'Tk'
   },
-  'BGN': {
-    currency: "Bulgaria Lev"
+  BGN: {
+    currency: 'Bulgaria Lev',
+    symbol: 'BGN'
   },
-  'BHD': {
-    currency: "Bahrain Dinar"
+  BHD: {
+    currency: 'Bahrain Dinar',
+    symbol: 'BD'
   },
-  'BIF': {
-    currency: "Burundi Franc"
+  BIF: {
+    currency: 'Burundi Franc',
+    symbol: 'FBu'
   },
-  'BMD': {
-    currency: "Bermuda Dollar"
+  BMD: {
+    currency: 'Bermuda Dollar'
   },
-  'BND': {
-    currency: "Brunei Darussalam Dollar"
+  BND: {
+    currency: 'Brunei Darussalam Dollar',
+    symbol: 'BN$'
   },
-  'BOB': {
-    currency: "Bolivia Boliviano"
+  BOB: {
+    currency: 'Bolivia Boliviano',
+    symbol: 'Bs'
   },
-  'BRL': {
-    currency: "Brazil Real"
+  BRL: {
+    currency: 'Brazil Real',
+    symbol: 'R$'
   },
-  'BSD': {
-    currency: "Bahamas Dollar"
+  BSD: {
+    currency: 'Bahamas Dollar'
   },
-  'BTN': {
-    currency: "Bhutan Ngultrum"
+  BTN: {
+    currency: 'Bhutan Ngultrum'
   },
-  'BWP': {
-    currency: "Botswana Pula"
+  BWP: {
+    currency: 'Botswana Pula',
+    symbol: 'BWP'
   },
-  'BYR': {
-    currency: "Belarus Ruble"
+  BYR: {
+    currency: 'Belarus Ruble',
+    symbol: 'BYR'
   },
-  'BZD': {
-    currency: "Belize Dollar"
+  BZD: {
+    currency: 'Belize Dollar',
+    symbol: 'BZ$'
   },
-  'CAD': {
-    currency: "Canada Dollar"
+  CAD: {
+    currency: 'Canada Dollar',
+    symbol: 'CA$'
   },
-  'CDF': {
-    currency: "Congo/Kinshasa Franc"
+  CDF: {
+    currency: 'Congo/Kinshasa Franc',
+    symbol: 'CDF'
   },
-  'CHF': {
-    currency: "Switzerland Franc"
+  CHF: {
+    currency: 'Switzerland Franc',
+    symbol: 'CHF'
   },
-  'CLP': {
-    currency: "Chile Peso"
+  CLP: {
+    currency: 'Chile Peso',
+    symbol: 'CL$'
   },
-  'CNY': {
-    currency: "China Yuan Renminbi"
+  CNY: {
+    currency: 'China Yuan Renminbi',
+    symbol: 'CN¥'
   },
-  'COP': {
-    currency: "Colombia Peso"
+  COP: {
+    currency: 'Colombia Peso',
+    symbol: 'CO$'
   },
-  'CRC': {
-    currency: "Costa Rica Colon"
+  CRC: {
+    currency: 'Costa Rica Colon',
+    symbol: '₡'
   },
-  'CUC': {
-    currency: "Cuba Convertible Peso"
+  CUC: {
+    currency: 'Cuba Convertible Peso'
   },
-  'CUP': {
-    currency: "Cuba Peso"
+  CUP: {
+    currency: 'Cuba Peso'
   },
-  'CVE': {
-    currency: "Cape Verde Escudo"
+  CVE: {
+    currency: 'Cape Verde Escudo',
+    symbol: 'CV$'
   },
-  'CZK': {
-    currency: "Czech Republic Koruna"
+  CZK: {
+    currency: 'Czech Republic Koruna',
+    symbol: 'Kč'
   },
-  'DJF': {
-    currency: "Djibouti Franc"
+  DJF: {
+    currency: 'Djibouti Franc',
+    symbol: 'Fdj'
   },
-  'DKK': {
-    currency: "Denmark Krone"
+  DKK: {
+    currency: 'Denmark Krone',
+    symbol: 'Dkr'
   },
-  'DOP': {
-    currency: "Dominican Republic Peso"
+  DOP: {
+    currency: 'Dominican Republic Peso',
+    symbol: 'RD$'
   },
-  'DZD': {
-    currency: "Algeria Dinar"
+  DZD: {
+    currency: 'Algeria Dinar',
+    symbol: 'DA'
   },
-  'EGP': {
-    currency: "Egypt Pound"
+  EGP: {
+    currency: 'Egypt Pound',
+    symbol: 'EGP'
   },
-  'ERN': {
-    currency: "Eritrea Nakfa"
+  ERN: {
+    currency: 'Eritrea Nakfa',
+    symbol: 'Nfk'
   },
-  'ETB': {
-    currency: "Ethiopia Birr"
+  ETB: {
+    currency: 'Ethiopia Birr',
+    symbol: 'Br'
   },
-  'EUR': {
-    currency: "Euro Member Countries"
+  EUR: {
+    currency: 'Euro Member Countries',
+    symbol: '€'
   },
-  'FJD': {
-    currency: "Fiji Dollar"
+  FJD: {
+    currency: 'Fiji Dollar'
   },
-  'FKP': {
-    currency: "Falkland Islands (Malvinas) Pound"
+  FKP: {
+    currency: 'Falkland Islands (Malvinas) Pound'
   },
-  'GBP': {
-    currency: "United Kingdom Pound"
+  GBP: {
+    currency: 'United Kingdom Pound',
+    symbol: '£'
   },
-  'GEL': {
-    currency: "Georgia Lari"
+  GEL: {
+    currency: 'Georgia Lari',
+    symbol: 'GEL'
   },
-  'GGP': {
-    currency: "Guernsey Pound"
+  GGP: {
+    currency: 'Guernsey Pound'
   },
-  'GHS': {
-    currency: "Ghana Cedi"
+  GHS: {
+    currency: 'Ghana Cedi',
+    symbol: 'GH₵'
   },
-  'GIP': {
-    currency: "Gibraltar Pound"
+  GIP: {
+    currency: 'Gibraltar Pound'
   },
-  'GMD': {
-    currency: "Gambia Dalasi"
+  GMD: {
+    currency: 'Gambia Dalasi'
   },
-  'GNF': {
-    currency: "Guinea Franc"
+  GNF: {
+    currency: 'Guinea Franc',
+    symbol: 'FG'
   },
-  'GTQ': {
-    currency: "Guatemala Quetzal"
+  GTQ: {
+    currency: 'Guatemala Quetzal',
+    symbol: 'GTQ'
   },
-  'GYD': {
-    currency: "Guyana Dollar"
+  GYD: {
+    currency: 'Guyana Dollar'
   },
-  'HKD': {
-    currency: "Hong Kong Dollar"
+  HKD: {
+    currency: 'Hong Kong Dollar',
+    symbol: 'HK$'
   },
-  'HNL': {
-    currency: "Honduras Lempira"
+  HNL: {
+    currency: 'Honduras Lempira',
+    symbol: 'HNL'
   },
-  'HRK': {
-    currency: "Croatia Kuna"
+  HRK: {
+    currency: 'Croatia Kuna',
+    symbol: 'kn'
   },
-  'HTG': {
-    currency: "Haiti Gourde"
+  HTG: {
+    currency: 'Haiti Gourde'
   },
-  'HUF': {
-    currency: "Hungary Forint"
+  HUF: {
+    currency: 'Hungary Forint',
+    symbol: 'Ft'
   },
-  'IDR': {
-    currency: "Indonesia Rupiah"
+  IDR: {
+    currency: 'Indonesia Rupiah',
+    symbol: 'Rp'
   },
-  'ILS': {
-    currency: "Israel Shekel"
+  ILS: {
+    currency: 'Israel Shekel',
+    symbol: '₪'
   },
-  'IMP': {
-    currency: "Isle of Man Pound"
+  IMP: {
+    currency: 'Isle of Man Pound'
   },
-  'INR': {
-    currency: "India Rupee"
+  INR: {
+    currency: 'India Rupee',
+    symbol: 'Rs'
   },
-  'IQD': {
-    currency: "Iraq Dinar"
+  IQD: {
+    currency: 'Iraq Dinar',
+    symbol: 'IQD'
   },
-  'IRR': {
-    currency: "Iran Rial"
+  IRR: {
+    currency: 'Iran Rial',
+    symbol: 'IRR'
   },
-  'ISK': {
-    currency: "Iceland Krona"
+  ISK: {
+    currency: 'Iceland Krona',
+    symbol: 'Ikr'
   },
-  'JEP': {
-    currency: "Jersey Pound"
+  JEP: {
+    currency: 'Jersey Pound'
   },
-  'JMD': {
-    currency: "Jamaica Dollar"
+  JMD: {
+    currency: 'Jamaica Dollar',
+    symbol: 'J$'
   },
-  'JOD': {
-    currency: "Jordan Dinar"
+  JOD: {
+    currency: 'Jordan Dinar',
+    symbol: 'JD'
   },
-  'JPY': {
-    currency: "Japan Yen"
+  JPY: {
+    currency: 'Japan Yen',
+    symbol: '¥'
   },
-  'KES': {
-    currency: "Kenya Shilling"
+  KES: {
+    currency: 'Kenya Shilling',
+    symbol: 'Ksh'
   },
-  'KGS': {
-    currency: "Kyrgyzstan Som"
+  KGS: {
+    currency: 'Kyrgyzstan Som'
   },
-  'KHR': {
-    currency: "Cambodia Riel"
+  KHR: {
+    currency: 'Cambodia Riel',
+    symbol: 'KHR'
   },
-  'KMF': {
-    currency: "Comoros Franc"
+  KMF: {
+    currency: 'Comoros Franc',
+    symbol: 'CF'
   },
-  'KPW': {
-    currency: "Korea (North) Won"
+  KPW: {
+    currency: 'Korea (North) Won'
   },
-  'KRW': {
-    currency: "Korea (South) Won"
+  KRW: {
+    currency: 'Korea (South) Won',
+    symbol: '₩'
   },
-  'KWD': {
-    currency: "Kuwait Dinar"
+  KWD: {
+    currency: 'Kuwait Dinar',
+    symbol: 'KD'
   },
-  'KYD': {
-    currency: "Cayman Islands Dollar"
+  KYD: {
+    currency: 'Cayman Islands Dollar'
   },
-  'KZT': {
-    currency: "Kazakhstan Tenge"
+  KZT: {
+    currency: 'Kazakhstan Tenge',
+    symbol: 'KZT'
   },
-  'LAK': {
-    currency: "Laos Kip"
+  LAK: {
+    currency: 'Laos Kip'
   },
-  'LBP': {
-    currency: "Lebanon Pound"
+  LBP: {
+    currency: 'Lebanon Pound',
+    symbol: 'LB£'
   },
-  'LKR': {
-    currency: "Sri Lanka Rupee"
+  LKR: {
+    currency: 'Sri Lanka Rupee',
+    symbol: 'SLRs'
   },
-  'LRD': {
-    currency: "Liberia Dollar"
+  LRD: {
+    currency: 'Liberia Dollar'
   },
-  'LSL': {
-    currency: "Lesotho Loti"
+  LSL: {
+    currency: 'Lesotho Loti'
   },
-  'LTL': {
-    currency: "Lithuania Litas"
+  LTL: {
+    currency: 'Lithuania Litas',
+    symbol: 'Lt'
   },
-  'LVL': {
-    currency: "Latvia Lat"
+  LVL: {
+    currency: 'Latvia Lat',
+    symbol: 'Ls'
   },
-  'LYD': {
-    currency: "Libya Dinar"
+  LYD: {
+    currency: 'Libya Dinar',
+    symbol: 'LD'
   },
-  'MAD': {
-    currency: "Morocco Dirham"
+  MAD: {
+    currency: 'Morocco Dirham',
+    symbol: 'MAD'
   },
-  'MDL': {
-    currency: "Moldova Leu"
+  MDL: {
+    currency: 'Moldova Leu',
+    symbol: 'MDL'
   },
-  'MGA': {
-    currency: "Madagascar Ariary"
+  MGA: {
+    currency: 'Madagascar Ariary',
+    symbol: 'MGA'
   },
-  'MKD': {
-    currency: "Macedonia Denar"
+  MKD: {
+    currency: 'Macedonia Denar',
+    symbol: 'MKD'
   },
-  'MMK': {
-    currency: "Myanmar (Burma) Kyat"
+  MMK: {
+    currency: 'Myanmar (Burma) Kyat',
+    symbol: 'MMK'
   },
-  'MNT': {
-    currency: "Mongolia Tughrik"
+  MNT: {
+    currency: 'Mongolia Tughrik'
   },
-  'MOP': {
-    currency: "Macau Pataca"
+  MOP: {
+    currency: 'Macau Pataca',
+    symbol: 'MOP$'
   },
-  'MRO': {
-    currency: "Mauritania Ouguiya"
+  MRO: {
+    currency: 'Mauritania Ouguiya'
   },
-  'MUR': {
-    currency: "Mauritius Rupee"
+  MUR: {
+    currency: 'Mauritius Rupee',
+    symbol: 'MURs'
   },
-  'MVR': {
-    currency: "Maldives (Maldive Islands) Rufiyaa"
+  MVR: {
+    currency: 'Maldives (Maldive Islands) Rufiyaa'
   },
-  'MWK': {
-    currency: "Malawi Kwacha"
+  MWK: {
+    currency: 'Malawi Kwacha'
   },
-  'MXN': {
-    currency: "Mexico Peso"
+  MXN: {
+    currency: 'Mexico Peso',
+    symbol: 'MX$'
   },
-  'MYR': {
-    currency: "Malaysia Ringgit"
+  MYR: {
+    currency: 'Malaysia Ringgit',
+    symbol: 'RM'
   },
-  'MZN': {
-    currency: "Mozambique Metical"
+  MZN: {
+    currency: 'Mozambique Metical',
+    symbol: 'MTn'
   },
-  'NAD': {
-    currency: "Namibia Dollar"
+  NAD: {
+    currency: 'Namibia Dollar',
+    symbol: 'N$'
   },
-  'NGN': {
-    currency: "Nigeria Naira"
+  NGN: {
+    currency: 'Nigeria Naira',
+    symbol: '₦'
   },
-  'NIO': {
-    currency: "Nicaragua Cordoba"
+  NIO: {
+    currency: 'Nicaragua Cordoba',
+    symbol: 'C$'
   },
-  'NOK': {
-    currency: "Norway Krone"
+  NOK: {
+    currency: 'Norway Krone',
+    symbol: 'Nkr'
   },
-  'NPR': {
-    currency: "Nepal Rupee"
+  NPR: {
+    currency: 'Nepal Rupee',
+    symbol: 'NPRs'
   },
-  'NZD': {
-    currency: "New Zealand Dollar"
+  NZD: {
+    currency: 'New Zealand Dollar',
+    symbol: 'NZ$'
   },
-  'OMR': {
-    currency: "Oman Rial"
+  OMR: {
+    currency: 'Oman Rial',
+    symbol: 'OMR'
   },
-  'PAB': {
-    currency: "Panama Balboa"
+  PAB: {
+    currency: 'Panama Balboa',
+    symbol: 'B/.'
   },
-  'PEN': {
-    currency: "Peru Nuevo Sol"
+  PEN: {
+    currency: 'Peru Nuevo Sol',
+    symbol: 'S/.'
   },
-  'PGK': {
-    currency: "Papua New Guinea Kina"
+  PGK: {
+    currency: 'Papua New Guinea Kina'
   },
-  'PHP': {
-    currency: "Philippines Peso"
+  PHP: {
+    currency: 'Philippines Peso',
+    symbol: '₱'
   },
-  'PKR': {
-    currency: "Pakistan Rupee"
+  PKR: {
+    currency: 'Pakistan Rupee',
+    symbol: 'PKRs'
   },
-  'PLN': {
-    currency: "Poland Zloty"
+  PLN: {
+    currency: 'Poland Zloty',
+    symbol: 'zł'
   },
-  'PYG': {
-    currency: "Paraguay Guarani"
+  PYG: {
+    currency: 'Paraguay Guarani',
+    symbol: '₲'
   },
-  'QAR': {
-    currency: "Qatar Riyal"
+  QAR: {
+    currency: 'Qatar Riyal',
+    symbol: 'QR'
   },
-  'RON': {
-    currency: "Romania New Leu"
+  RON: {
+    currency: 'Romania New Leu',
+    symbol: 'RON'
   },
-  'RSD': {
-    currency: "Serbia Dinar"
+  RSD: {
+    currency: 'Serbia Dinar',
+    symbol: 'din.'
   },
-  'RUB': {
-    currency: "Russia Ruble"
+  RUB: {
+    currency: 'Russia Ruble',
+    symbol: 'RUB'
   },
-  'RWF': {
-    currency: "Rwanda Franc"
+  RWF: {
+    currency: 'Rwanda Franc',
+    symbol: 'RWF'
   },
-  'SAR': {
-    currency: "Saudi Arabia Riyal"
+  SAR: {
+    currency: 'Saudi Arabia Riyal',
+    symbol: 'SR'
   },
-  'SBD': {
-    currency: "Solomon Islands Dollar"
+  SBD: {
+    currency: 'Solomon Islands Dollar'
   },
-  'SCR': {
-    currency: "Seychelles Rupee"
+  SCR: {
+    currency: 'Seychelles Rupee'
   },
-  'SDG': {
-    currency: "Sudan Pound"
+  SDG: {
+    currency: 'Sudan Pound',
+    symbol: 'SDG'
   },
-  'SEK': {
-    currency: "Sweden Krona"
+  SEK: {
+    currency: 'Sweden Krona',
+    symbol: 'Skr'
   },
-  'SGD': {
-    currency: "Singapore Dollar"
+  SGD: {
+    currency: 'Singapore Dollar',
+    symbol: 'S$'
   },
-  'SHP': {
-    currency: "Saint Helena Pound"
+  SHP: {
+    currency: 'Saint Helena Pound'
   },
-  'SLL': {
-    currency: "Sierra Leone Leone"
+  SLL: {
+    currency: 'Sierra Leone Leone'
   },
-  'SOS': {
-    currency: "Somalia Shilling"
+  SOS: {
+    currency: 'Somalia Shilling',
+    symbol: 'Ssh'
   },
-  'SRD': {
-    currency: "Suriname Dollar"
+  SRD: {
+    currency: 'Suriname Dollar'
   },
-  'STD': {
-    currency: "São Tomé and Príncipe Dobra"
+  STD: {
+    currency: 'São Tomé and Príncipe Dobra'
   },
-  'SVC': {
-    currency: "El Salvador Colon"
+  SVC: {
+    currency: 'El Salvador Colon'
   },
-  'SYP': {
-    currency: "Syria Pound"
+  SYP: {
+    currency: 'Syria Pound',
+    symbol: 'SY£'
   },
-  'SZL': {
-    currency: "Swaziland Lilangeni"
+  SZL: {
+    currency: 'Swaziland Lilangeni'
   },
-  'THB': {
-    currency: "Thailand Baht"
+  THB: {
+    currency: 'Thailand Baht',
+    symbol: '฿'
   },
-  'TJS': {
-    currency: "Tajikistan Somoni"
+  TJS: {
+    currency: 'Tajikistan Somoni'
   },
-  'TMT': {
-    currency: "Turkmenistan Manat"
+  TMT: {
+    currency: 'Turkmenistan Manat'
   },
-  'TND': {
-    currency: "Tunisia Dinar"
+  TND: {
+    currency: 'Tunisia Dinar',
+    symbol: 'DT'
   },
-  'TOP': {
-    currency: "Tonga Pa'anga"
+  TOP: {
+    currency: 'Tonga Pa\'anga',
+    symbol: 'T$'
   },
-  'TRY': {
-    currency: "Turkey Lira"
+  TRY: {
+    currency: 'Turkey Lira',
+    symbol: 'TL'
   },
-  'TTD': {
-    currency: "Trinidad and Tobago Dollar"
+  TTD: {
+    currency: 'Trinidad and Tobago Dollar',
+    symbol: 'TT$'
   },
-  'TVD': {
-    currency: "Tuvalu Dollar"
+  TVD: {
+    currency: 'Tuvalu Dollar'
   },
-  'TWD': {
-    currency: "Taiwan New Dollar"
+  BTC: {
+    currency: 'Bitcoin'
   },
-  'TZS': {
-    currency: "Tanzania Shilling"
+  TWD: {
+    currency: 'Taiwan New Dollar',
+    symbol: 'NT$'
   },
-  'UAH': {
-    currency: "Ukraine Hryvna"
+  TZS: {
+    currency: 'Tanzania Shilling',
+    symbol: 'TSh'
   },
-  'UGX': {
-    currency: "Uganda Shilling"
+  UAH: {
+    currency: 'Ukraine Hryvna',
+    symbol: '₴'
   },
-  'USD': {
-    currency: "United States Dollar"
+  UGX: {
+    currency: 'Uganda Shilling',
+    symbol: 'USh'
   },
-  'UYU': {
-    currency: "Uruguay Peso"
+  USD: {
+    currency: 'United States Dollar',
+    symbol: '$'
   },
-  'UZS': {
-    currency: "Uzbekistan Som"
+  UYU: {
+    currency: 'Uruguay Peso',
+    symbol: '$U'
   },
-  'VEF': {
-    currency: "Venezuela Bolivar"
+  UZS: {
+    currency: 'Uzbekistan Som',
+    symbol: 'UZS'
   },
-  'VND': {
-    currency: "Viet Nam Dong"
+  VEF: {
+    currency: 'Venezuela Bolivar',
+    symbol: 'Bs.F.'
   },
-  'VUV': {
-    currency: "Vanuatu Vatu"
+  VND: {
+    currency: 'Viet Nam Dong',
+    symbol: '₫'
   },
-  'WST': {
-    currency: "Samoa Tala"
+  VUV: {
+    currency: 'Vanuatu Vatu'
   },
-  'XAF': {
-    currency: "Communauté Financière Africaine (BEAC) CFA Franc BEAC"
+  WST: {
+    currency: 'Samoa Tala'
   },
-  'XCD': {
-    currency: "East Caribbean Dollar"
+  XAF: {
+    currency: 'Communauté Financière Africaine (BEAC) CFA Franc BEAC',
+    symbol: 'FCFA'
   },
-  'XDR': {
-    currency: "International Monetary Fund (IMF) Special Drawing Rights"
+  XCD: {
+    currency: 'East Caribbean Dollar'
   },
-  'XOF': {
-    currency: "Communauté Financière Africaine (BCEAO) Franc"
+  XDR: {
+    currency: 'International Monetary Fund (IMF) Special Drawing Rights'
   },
-  'XPF': {
-    currency: "Comptoirs Français du Pacifique (CFP) Franc"
+  XOF: {
+    currency: 'Communauté Financière Africaine (BCEAO) Franc',
+    symbol: 'CFA'
   },
-  'YER': {
-    currency: "Yemen Rial"
+  XPF: {
+    currency: 'Comptoirs Français du Pacifique (CFP) Franc'
   },
-  'ZAR': {
-    currency: "South Africa Rand"
+  YER: {
+    currency: 'Yemen Rial',
+    symbol: 'YR'
   },
-  'ZMW': {
-    currency: "Zambia Kwacha"
+  ZAR: {
+    currency: 'South Africa Rand',
+    symbol: 'R'
   },
-  'ZWD': {
-    currency: "Zimbabwe Dollar"
+  ZMW: {
+    currency: 'Zambia Kwacha'
+  },
+  ZWD: {
+    currency: 'Zimbabwe Dollar'
   }
 };
 
@@ -1083,7 +1271,6 @@ angular.module('BI.directives', []).directive('gryft', function() {
             load: updater
           };
         }
-        console.log(newSettings);
         return chart = new Highcharts.StockChart(newSettings);
       });
     }
@@ -1140,7 +1327,7 @@ BI = angular.module('BI', ['ui.router', 'ui.bootstrap', 'ui.bootstrap.typeahead'
     url: '/logout',
     controller: 'LogoutCtrl'
   });
-  return $urlRouterProvider.otherwise('/capture');
+  return $urlRouterProvider.otherwise('/');
 }).run([
   '$rootScope', '$state', 'Auth', function($rootScope, $state, Auth) {
     return Auth.monitor();

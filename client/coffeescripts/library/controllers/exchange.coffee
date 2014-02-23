@@ -15,9 +15,10 @@ angular.module 'BI.controllers'
     { timestamp: 'thurs 2014', position: 'buy', price: 1134, visible: 20000, tif: 30320 }
   ]
 
-  socket.on 'update_order_book', (data) ->
-    console.log 'heres the order book', data
-    if data
+  socket.on 'update_pending_book', (data) ->
+    #console.log 'heres the order book', data
+    
+    if data and data.orders and data.orders.length
       $scope.$apply ->
         $scope.exchanges = data.orders
 
@@ -28,9 +29,9 @@ angular.module 'BI.controllers'
     $scope.currencies = choices
 
   $scope.$watch 'selected', (selected, oldSelected) ->
-    console.log 'selected', selected, oldSelected
+
     if selected and (selected.code or currencyChoices.obj[selected.toUpperCase()])
-      console.log 'passed test', selected
+
       if selected.code
         selectedCurrency.set selected
       else

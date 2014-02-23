@@ -3,8 +3,33 @@ angular.module 'BI.controllers'
 
 .controller 'OrderCtrl', ($scope, Order, currentOrder, selectedCurrency) ->
   # Default
-  $scope.activeOrderType = 'market' 
-  
+
+  $scope.orderType = 'market' 
+  $scope.orderTypes = [
+    'market'
+    'limit'
+    'sell_short'
+    'stop'
+    'iceberg'
+    'hidden'
+  ]
+
+  $scope.tif = 'day'
+  $scope.tifTypes = [
+    'day'
+    'gtc'
+    'fok'
+    'tif'
+  ]
+
+  $scope.market = 'bti'
+  $scope.marketTypes = [
+    'bti'
+    'mtgox'
+    'bitstamp'
+    'btce'
+  ]
+
   $scope.displayCurrency = selectedCurrency.value
 
   selectedCurrency.change () ->
@@ -13,23 +38,32 @@ angular.module 'BI.controllers'
   # act on shared service
   setOrder = () ->
     currentOrder.set
-      type: $scope.activeOrderType
+      type: $scope.orderType
       price: $scope.price
       quantity: $scope.quantity
+      visible: $scope.visible
+      tif: $scope.tif
+      market: $scope.market
 
-  $scope.$watch 'price', setOrder 
-  $scope.$watch 'type', setOrder
-  $scope.$watch 'quantity', setOrder 
+  # save shared devices
+  for prop in ['price','orderType','quantity','tif','market', 'visible']
+    $scope.$watch prop, setOrder
 
-  # focus active type
-  $scope.focus = (type) ->
-    $scope.activeOrderType = type
+  $scope.$watch 'quantity', (val) ->
+    $scope.visible = val if not $scope.visibleEdited
+
+  $scope.editVisible = ->
+    $scope.visibleEdited = true
+
+  # select active type
+  $scope.selected = (type) ->
+    $scope.orderType = type
 
   # return boolean, which type is active
-  $scope.activeOrder = (type) ->
-    if $scope.activeOrderType isnt type
-    then 'disabled'
-    else ''
+  $scope.active = (type) ->
+    if $scope.orderType is type
+    then true
+    else false
 
 
 .controller 'PurchaseCtrl', ($scope, $http, Order, currentOrder) ->
@@ -52,6 +86,5 @@ angular.module 'BI.controllers'
         console.log 'successful order'
 
       console.log 'execute market order'
-
 
 

@@ -1,22 +1,35 @@
 # Open the Module BI.controllers
 angular.module 'BI.controllers'
 
-.controller 'AccountCtrl', ($scope, $http, UserSession, socket, selectedCurrency) ->
+.controller 'AccountCtrl', ($scope, $http, UserSession, socket, selectedCurrency, LatestTrade) ->
   $scope.displayCurrency = selectedCurrency.value
-
   selectedCurrency.change () ->
     $scope.displayCurrency = selectedCurrency.value
+
+  $scope.up = (price) ->
+    price >= $scope.latestPrice
+
 
   $scope.exchanges = [
     { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
     { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
     { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
     { timestamp: 'thurs 2014', position: 'buy', price: 1134, visible: 20000, tif: 30320 }
-  ]   
+  ]
 
-  socket.on 'update_account_orders', (data) ->
-    #NOT YET IMPLEMENTED
-    console.log 'heres the account book', data
-    if data
+  socket.on 'update_completed_book', (data) ->
+    #console.log 'heres the completed order book', data
+
+    if data and data.orders and data.orders.length
       $scope.$apply ->
-        $scope.exchanges = data.orders
+        $scope.latestPrice = null
+        i = 0
+
+        until $scope.latestPrice or i is data.orders.length
+          $scope.latestPrice = data.orders[i].price
+          i++
+
+        LatestTrade.set $scope.latestPrice
+
+        $scope.exchanges = data.orders[0..6]
+        

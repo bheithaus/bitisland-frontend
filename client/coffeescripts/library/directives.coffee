@@ -66,7 +66,8 @@ angular.module 'BI.directives', []
       if updater
         newSettings.chart.events = 
           load: updater
-      console.log newSettings
+      
+      #console.log newSettings
 
       chart = new Highcharts.StockChart newSettings
 

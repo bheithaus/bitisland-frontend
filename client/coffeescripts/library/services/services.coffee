@@ -13,6 +13,15 @@ angular.module 'BI.services'
 .service 'socket', (UserSession) ->
   io.connect window.location.origin, { query: 'token=' + UserSession.loggedIn() }
 
+.service 'LatestTrade', () ->
+  latest = {}
+
+  set: (data) ->
+    latest = data
+  
+  get: ->
+    latest
+
 .service 'UserSession', ($window) ->
   current = $window.sessionStorage.token
   
@@ -94,7 +103,7 @@ angular.module 'BI.services'
       currentOrder
 
     set: (order) ->
-      console.log 'set to ', order
+      #console.log 'set to ', order
       currentOrder = order
 
 
@@ -104,7 +113,7 @@ angular.module 'BI.services'
     value: { rate: 1, code: 'USD', name: 'United States Dollars' }
 
     set: (selection) ->
-      console.log 'set to', selection
+      #console.log 'set to', selection
       selectedCurrency.value = selection
       @notify()
 
@@ -136,6 +145,7 @@ angular.module 'BI.services'
 
       if CURRENCY_NAMES[code]
         currency.name = CURRENCY_NAMES[code].currency
+        currency.sym = CURRENCY_NAMES[code].symbol
         currency.code = code
         completedCurrencyChoices.array.push currency
         completedCurrencyChoices.obj[code] = currency
@@ -144,6 +154,9 @@ angular.module 'BI.services'
 
     currencyChoices.array = completedCurrencyChoices.array
     currencyChoices.obj = completedCurrencyChoices.obj
+
+    console.log 'CURREncy', currencyChoices
+
     currencyChoices.notify()
     selectedCurrency.set USD
 
@@ -158,169 +171,168 @@ angular.module 'BI.services'
       @cb currencyChoices.array
 
 
-CURRENCY_NAMES = {
-    'AED': { currency: "United Arab Emirates Dirham" }
-    'AFN': { currency: "Afghanistan Afghani" }
-    'ALL': { currency: "Albania Lek" }
-    'AMD': { currency: "Armenia Dram" }
-    'ANG': { currency: "Netherlands Antilles Guilder" }
-    'AOA': { currency: "Angola Kwanza" }
-    'ARS': { currency: "Argentina Peso" }
-    'AUD': { currency: "Australia Dollar" }
-    'AWG': { currency: "Aruba Guilder" }
-    'AZN': { currency: "Azerbaijan New Manat" }
-    'BAM': { currency: "Bosnia and Herzegovina Convertible Marka" }
-    'BBD': { currency: "Barbados Dollar" }
-    'BDT': { currency: "Bangladesh Taka" }
-    'BGN': { currency: "Bulgaria Lev" }
-    'BHD': { currency: "Bahrain Dinar" }
-    'BIF': { currency: "Burundi Franc" }
-    'BMD': { currency: "Bermuda Dollar" }
-    'BND': { currency: "Brunei Darussalam Dollar" }
-    'BOB': { currency: "Bolivia Boliviano" }
-    'BRL': { currency: "Brazil Real" }
-    'BSD': { currency: "Bahamas Dollar" }
-    'BTN': { currency: "Bhutan Ngultrum" }
-    'BWP': { currency: "Botswana Pula" }
-    'BYR': { currency: "Belarus Ruble" }
-    'BZD': { currency: "Belize Dollar" }
-    'CAD': { currency: "Canada Dollar" }
-    'CDF': { currency: "Congo/Kinshasa Franc" }
-    'CHF': { currency: "Switzerland Franc" }
-    'CLP': { currency: "Chile Peso" }
-    'CNY': { currency: "China Yuan Renminbi" }
-    'COP': { currency: "Colombia Peso" }
-    'CRC': { currency: "Costa Rica Colon" }
-    'CUC': { currency: "Cuba Convertible Peso" }
-    'CUP': { currency: "Cuba Peso" }
-    'CVE': { currency: "Cape Verde Escudo" }
-    'CZK': { currency: "Czech Republic Koruna" }
-    'DJF': { currency: "Djibouti Franc" }
-    'DKK': { currency: "Denmark Krone" }
-    'DOP': { currency: "Dominican Republic Peso" }
-    'DZD': { currency: "Algeria Dinar" }
-    'EGP': { currency: "Egypt Pound" }
-    'ERN': { currency: "Eritrea Nakfa" }
-    'ETB': { currency: "Ethiopia Birr" }
-    'EUR': { currency: "Euro Member Countries" }
-    'FJD': { currency: "Fiji Dollar" }
-    'FKP': { currency: "Falkland Islands (Malvinas) Pound" }
-    'GBP': { currency: "United Kingdom Pound" }
-    'GEL': { currency: "Georgia Lari" }
-    'GGP': { currency: "Guernsey Pound" }
-    'GHS': { currency: "Ghana Cedi" }
-    'GIP': { currency: "Gibraltar Pound" }
-    'GMD': { currency: "Gambia Dalasi" }
-    'GNF': { currency: "Guinea Franc" }
-    'GTQ': { currency: "Guatemala Quetzal" }
-    'GYD': { currency: "Guyana Dollar" }
-    'HKD': { currency: "Hong Kong Dollar" }
-    'HNL': { currency: "Honduras Lempira" }
-    'HRK': { currency: "Croatia Kuna" }
-    'HTG': { currency: "Haiti Gourde" }
-    'HUF': { currency: "Hungary Forint" }
-    'IDR': { currency: "Indonesia Rupiah" }
-    'ILS': { currency: "Israel Shekel" }
-    'IMP': { currency: "Isle of Man Pound" }
-    'INR': { currency: "India Rupee" }
-    'IQD': { currency: "Iraq Dinar" }
-    'IRR': { currency: "Iran Rial" }
-    'ISK': { currency: "Iceland Krona" }
-    'JEP': { currency: "Jersey Pound" }
-    'JMD': { currency: "Jamaica Dollar" }
-    'JOD': { currency: "Jordan Dinar" }
-    'JPY': { currency: "Japan Yen" }
-    'KES': { currency: "Kenya Shilling" }
-    'KGS': { currency: "Kyrgyzstan Som" }
-    'KHR': { currency: "Cambodia Riel" }
-    'KMF': { currency: "Comoros Franc" }
-    'KPW': { currency: "Korea (North) Won" }
-    'KRW': { currency: "Korea (South) Won" }
-    'KWD': { currency: "Kuwait Dinar" }
-    'KYD': { currency: "Cayman Islands Dollar" }
-    'KZT': { currency: "Kazakhstan Tenge" }
-    'LAK': { currency: "Laos Kip" }
-    'LBP': { currency: "Lebanon Pound" }
-    'LKR': { currency: "Sri Lanka Rupee" }
-    'LRD': { currency: "Liberia Dollar" }
-    'LSL': { currency: "Lesotho Loti" }
-    'LTL': { currency: "Lithuania Litas" }
-    'LVL': { currency: "Latvia Lat" }
-    'LYD': { currency: "Libya Dinar" }
-    'MAD': { currency: "Morocco Dirham" }
-    'MDL': { currency: "Moldova Leu" }
-    'MGA': { currency: "Madagascar Ariary" }
-    'MKD': { currency: "Macedonia Denar" }
-    'MMK': { currency: "Myanmar (Burma) Kyat" }
-    'MNT': { currency: "Mongolia Tughrik" }
-    'MOP': { currency: "Macau Pataca" }
-    'MRO': { currency: "Mauritania Ouguiya" }
-    'MUR': { currency: "Mauritius Rupee" }
-    'MVR': { currency: "Maldives (Maldive Islands) Rufiyaa" }
-    'MWK': { currency: "Malawi Kwacha" }
-    'MXN': { currency: "Mexico Peso" }
-    'MYR': { currency: "Malaysia Ringgit" }
-    'MZN': { currency: "Mozambique Metical" }
-    'NAD': { currency: "Namibia Dollar" }
-    'NGN': { currency: "Nigeria Naira" }
-    'NIO': { currency: "Nicaragua Cordoba" }
-    'NOK': { currency: "Norway Krone" }
-    'NPR': { currency: "Nepal Rupee" }
-    'NZD': { currency: "New Zealand Dollar" }
-    'OMR': { currency: "Oman Rial" }
-    'PAB': { currency: "Panama Balboa" }
-    'PEN': { currency: "Peru Nuevo Sol" }
-    'PGK': { currency: "Papua New Guinea Kina" }
-    'PHP': { currency: "Philippines Peso" }
-    'PKR': { currency: "Pakistan Rupee" }
-    'PLN': { currency: "Poland Zloty" }
-    'PYG': { currency: "Paraguay Guarani" }
-    'QAR': { currency: "Qatar Riyal" }
-    'RON': { currency: "Romania New Leu" }
-    'RSD': { currency: "Serbia Dinar" }
-    'RUB': { currency: "Russia Ruble" }
-    'RWF': { currency: "Rwanda Franc" }
-    'SAR': { currency: "Saudi Arabia Riyal" }
-    'SBD': { currency: "Solomon Islands Dollar" }
-    'SCR': { currency: "Seychelles Rupee" }
-    'SDG': { currency: "Sudan Pound" }
-    'SEK': { currency: "Sweden Krona" }
-    'SGD': { currency: "Singapore Dollar" }
-    'SHP': { currency: "Saint Helena Pound" }
-    'SLL': { currency: "Sierra Leone Leone" }
-    'SOS': { currency: "Somalia Shilling" }
-    # # 'SP: { currencyL':*"  Seborga Luigino" }
-    'SRD': { currency: "Suriname Dollar" }
-    'STD': { currency: "São Tomé and Príncipe Dobra" }
-    'SVC': { currency: "El Salvador Colon" }
-    'SYP': { currency: "Syria Pound" }
-    'SZL': { currency: "Swaziland Lilangeni" }
-    'THB': { currency: "Thailand Baht" }
-    'TJS': { currency: "Tajikistan Somoni" }
-    'TMT': { currency: "Turkmenistan Manat" }
-    'TND': { currency: "Tunisia Dinar" }
-    'TOP': { currency: "Tonga Pa'anga" }
-    'TRY': { currency: "Turkey Lira" }
-    'TTD': { currency: "Trinidad and Tobago Dollar" }
-    'TVD': { currency: "Tuvalu Dollar" }
-    'TWD': { currency: "Taiwan New Dollar" }
-    'TZS': { currency: "Tanzania Shilling" }
-    'UAH': { currency: "Ukraine Hryvna" }
-    'UGX': { currency: "Uganda Shilling" }
-    'USD': { currency: "United States Dollar" }
-    'UYU': { currency: "Uruguay Peso" }
-    'UZS': { currency: "Uzbekistan Som" }
-    'VEF': { currency: "Venezuela Bolivar" }
-    'VND': { currency: "Viet Nam Dong" }
-    'VUV': { currency: "Vanuatu Vatu" }
-    'WST': { currency: "Samoa Tala" }
-    'XAF': { currency: "Communauté Financière Africaine (BEAC) CFA Franc BEAC" }
-    'XCD': { currency: "East Caribbean Dollar" }
-    'XDR': { currency: "International Monetary Fund (IMF) Special Drawing Rights" }
-    'XOF': { currency: "Communauté Financière Africaine (BCEAO) Franc" }
-    'XPF': { currency: "Comptoirs Français du Pacifique (CFP) Franc" }
-    'YER': { currency: "Yemen Rial" }
-    'ZAR': { currency: "South Africa Rand" }
-    'ZMW': { currency: "Zambia Kwacha" }
-    'ZWD': { currency: "Zimbabwe Dollar"}
-  }
+CURRENCY_NAMES = { 
+  AED: { currency: 'United Arab Emirates Dirham', symbol: 'AED' },
+  AFN: { currency: 'Afghanistan Afghani', symbol: 'Af' },
+  ALL: { currency: 'Albania Lek', symbol: 'ALL' },
+  AMD: { currency: 'Armenia Dram', symbol: 'AMD' },
+  ANG: { currency: 'Netherlands Antilles Guilder' },
+  AOA: { currency: 'Angola Kwanza' },
+  ARS: { currency: 'Argentina Peso', symbol: 'AR$' },
+  AUD: { currency: 'Australia Dollar', symbol: 'AU$' },
+  AWG: { currency: 'Aruba Guilder' },
+  AZN: { currency: 'Azerbaijan New Manat', symbol: 'man.' },
+  BAM: { currency: 'Bosnia and Herzegovina Convertible Marka', symbol: 'KM' },
+  BBD: { currency: 'Barbados Dollar' },
+  BDT: { currency: 'Bangladesh Taka', symbol: 'Tk' },
+  BGN: { currency: 'Bulgaria Lev', symbol: 'BGN' },
+  BHD: { currency: 'Bahrain Dinar', symbol: 'BD' },
+  BIF: { currency: 'Burundi Franc', symbol: 'FBu' },
+  BMD: { currency: 'Bermuda Dollar' },
+  BND: { currency: 'Brunei Darussalam Dollar', symbol: 'BN$' },
+  BOB: { currency: 'Bolivia Boliviano', symbol: 'Bs' },
+  BRL: { currency: 'Brazil Real', symbol: 'R$' },
+  BSD: { currency: 'Bahamas Dollar' },
+  BTN: { currency: 'Bhutan Ngultrum' },
+  BWP: { currency: 'Botswana Pula', symbol: 'BWP' },
+  BYR: { currency: 'Belarus Ruble', symbol: 'BYR' },
+  BZD: { currency: 'Belize Dollar', symbol: 'BZ$' },
+  CAD: { currency: 'Canada Dollar', symbol: 'CA$' },
+  CDF: { currency: 'Congo/Kinshasa Franc', symbol: 'CDF' },
+  CHF: { currency: 'Switzerland Franc', symbol: 'CHF' },
+  CLP: { currency: 'Chile Peso', symbol: 'CL$' },
+  CNY: { currency: 'China Yuan Renminbi', symbol: 'CN¥' },
+  COP: { currency: 'Colombia Peso', symbol: 'CO$' },
+  CRC: { currency: 'Costa Rica Colon', symbol: '₡' },
+  CUC: { currency: 'Cuba Convertible Peso' },
+  CUP: { currency: 'Cuba Peso' },
+  CVE: { currency: 'Cape Verde Escudo', symbol: 'CV$' },
+  CZK: { currency: 'Czech Republic Koruna', symbol: 'Kč' },
+  DJF: { currency: 'Djibouti Franc', symbol: 'Fdj' },
+  DKK: { currency: 'Denmark Krone', symbol: 'Dkr' },
+  DOP: { currency: 'Dominican Republic Peso', symbol: 'RD$' },
+  DZD: { currency: 'Algeria Dinar', symbol: 'DA' },
+  EGP: { currency: 'Egypt Pound', symbol: 'EGP' },
+  ERN: { currency: 'Eritrea Nakfa', symbol: 'Nfk' },
+  ETB: { currency: 'Ethiopia Birr', symbol: 'Br' },
+  EUR: { currency: 'Euro Member Countries', symbol: '€' },
+  FJD: { currency: 'Fiji Dollar' },
+  FKP: { currency: 'Falkland Islands (Malvinas) Pound' },
+  GBP: { currency: 'United Kingdom Pound', symbol: '£' },
+  GEL: { currency: 'Georgia Lari', symbol: 'GEL' },
+  GGP: { currency: 'Guernsey Pound' },
+  GHS: { currency: 'Ghana Cedi', symbol: 'GH₵' },
+  GIP: { currency: 'Gibraltar Pound' },
+  GMD: { currency: 'Gambia Dalasi' },
+  GNF: { currency: 'Guinea Franc', symbol: 'FG' },
+  GTQ: { currency: 'Guatemala Quetzal', symbol: 'GTQ' },
+  GYD: { currency: 'Guyana Dollar' },
+  HKD: { currency: 'Hong Kong Dollar', symbol: 'HK$' },
+  HNL: { currency: 'Honduras Lempira', symbol: 'HNL' },
+  HRK: { currency: 'Croatia Kuna', symbol: 'kn' },
+  HTG: { currency: 'Haiti Gourde' },
+  HUF: { currency: 'Hungary Forint', symbol: 'Ft' },
+  IDR: { currency: 'Indonesia Rupiah', symbol: 'Rp' },
+  ILS: { currency: 'Israel Shekel', symbol: '₪' },
+  IMP: { currency: 'Isle of Man Pound' },
+  INR: { currency: 'India Rupee', symbol: 'Rs' },
+  IQD: { currency: 'Iraq Dinar', symbol: 'IQD' },
+  IRR: { currency: 'Iran Rial', symbol: 'IRR' },
+  ISK: { currency: 'Iceland Krona', symbol: 'Ikr' },
+  JEP: { currency: 'Jersey Pound' },
+  JMD: { currency: 'Jamaica Dollar', symbol: 'J$' },
+  JOD: { currency: 'Jordan Dinar', symbol: 'JD' },
+  JPY: { currency: 'Japan Yen', symbol: '¥' },
+  KES: { currency: 'Kenya Shilling', symbol: 'Ksh' },
+  KGS: { currency: 'Kyrgyzstan Som' },
+  KHR: { currency: 'Cambodia Riel', symbol: 'KHR' },
+  KMF: { currency: 'Comoros Franc', symbol: 'CF' },
+  KPW: { currency: 'Korea (North) Won' },
+  KRW: { currency: 'Korea (South) Won', symbol: '₩' },
+  KWD: { currency: 'Kuwait Dinar', symbol: 'KD' },
+  KYD: { currency: 'Cayman Islands Dollar' },
+  KZT: { currency: 'Kazakhstan Tenge', symbol: 'KZT' },
+  LAK: { currency: 'Laos Kip' },
+  LBP: { currency: 'Lebanon Pound', symbol: 'LB£' },
+  LKR: { currency: 'Sri Lanka Rupee', symbol: 'SLRs' },
+  LRD: { currency: 'Liberia Dollar' },
+  LSL: { currency: 'Lesotho Loti' },
+  LTL: { currency: 'Lithuania Litas', symbol: 'Lt' },
+  LVL: { currency: 'Latvia Lat', symbol: 'Ls' },
+  LYD: { currency: 'Libya Dinar', symbol: 'LD' },
+  MAD: { currency: 'Morocco Dirham', symbol: 'MAD' },
+  MDL: { currency: 'Moldova Leu', symbol: 'MDL' },
+  MGA: { currency: 'Madagascar Ariary', symbol: 'MGA' },
+  MKD: { currency: 'Macedonia Denar', symbol: 'MKD' },
+  MMK: { currency: 'Myanmar (Burma) Kyat', symbol: 'MMK' },
+  MNT: { currency: 'Mongolia Tughrik' },
+  MOP: { currency: 'Macau Pataca', symbol: 'MOP$' },
+  MRO: { currency: 'Mauritania Ouguiya' },
+  MUR: { currency: 'Mauritius Rupee', symbol: 'MURs' },
+  MVR: { currency: 'Maldives (Maldive Islands) Rufiyaa' },
+  MWK: { currency: 'Malawi Kwacha' },
+  MXN: { currency: 'Mexico Peso', symbol: 'MX$' },
+  MYR: { currency: 'Malaysia Ringgit', symbol: 'RM' },
+  MZN: { currency: 'Mozambique Metical', symbol: 'MTn' },
+  NAD: { currency: 'Namibia Dollar', symbol: 'N$' },
+  NGN: { currency: 'Nigeria Naira', symbol: '₦' },
+  NIO: { currency: 'Nicaragua Cordoba', symbol: 'C$' },
+  NOK: { currency: 'Norway Krone', symbol: 'Nkr' },
+  NPR: { currency: 'Nepal Rupee', symbol: 'NPRs' },
+  NZD: { currency: 'New Zealand Dollar', symbol: 'NZ$' },
+  OMR: { currency: 'Oman Rial', symbol: 'OMR' },
+  PAB: { currency: 'Panama Balboa', symbol: 'B/.' },
+  PEN: { currency: 'Peru Nuevo Sol', symbol: 'S/.' },
+  PGK: { currency: 'Papua New Guinea Kina' },
+  PHP: { currency: 'Philippines Peso', symbol: '₱' },
+  PKR: { currency: 'Pakistan Rupee', symbol: 'PKRs' },
+  PLN: { currency: 'Poland Zloty', symbol: 'zł' },
+  PYG: { currency: 'Paraguay Guarani', symbol: '₲' },
+  QAR: { currency: 'Qatar Riyal', symbol: 'QR' },
+  RON: { currency: 'Romania New Leu', symbol: 'RON' },
+  RSD: { currency: 'Serbia Dinar', symbol: 'din.' },
+  RUB: { currency: 'Russia Ruble', symbol: 'RUB' },
+  RWF: { currency: 'Rwanda Franc', symbol: 'RWF' },
+  SAR: { currency: 'Saudi Arabia Riyal', symbol: 'SR' },
+  SBD: { currency: 'Solomon Islands Dollar' },
+  SCR: { currency: 'Seychelles Rupee' },
+  SDG: { currency: 'Sudan Pound', symbol: 'SDG' },
+  SEK: { currency: 'Sweden Krona', symbol: 'Skr' },
+  SGD: { currency: 'Singapore Dollar', symbol: 'S$' },
+  SHP: { currency: 'Saint Helena Pound' },
+  SLL: { currency: 'Sierra Leone Leone' },
+  SOS: { currency: 'Somalia Shilling', symbol: 'Ssh' },
+  SRD: { currency: 'Suriname Dollar' },
+  STD: { currency: 'São Tomé and Príncipe Dobra' },
+  SVC: { currency: 'El Salvador Colon' },
+  SYP: { currency: 'Syria Pound', symbol: 'SY£' },
+  SZL: { currency: 'Swaziland Lilangeni' },
+  THB: { currency: 'Thailand Baht', symbol: '฿' },
+  TJS: { currency: 'Tajikistan Somoni' },
+  TMT: { currency: 'Turkmenistan Manat' },
+  TND: { currency: 'Tunisia Dinar', symbol: 'DT' },
+  TOP: { currency: 'Tonga Pa\'anga', symbol: 'T$' },
+  TRY: { currency: 'Turkey Lira', symbol: 'TL' },
+  TTD: { currency: 'Trinidad and Tobago Dollar', symbol: 'TT$' },
+  TVD: { currency: 'Tuvalu Dollar' },
+  BTC: { currency: 'Bitcoin' },
+  TWD: { currency: 'Taiwan New Dollar', symbol: 'NT$' },
+  TZS: { currency: 'Tanzania Shilling', symbol: 'TSh' },
+  UAH: { currency: 'Ukraine Hryvna', symbol: '₴' },
+  UGX: { currency: 'Uganda Shilling', symbol: 'USh' },
+  USD: { currency: 'United States Dollar', symbol: '$' },
+  UYU: { currency: 'Uruguay Peso', symbol: '$U' },
+  UZS: { currency: 'Uzbekistan Som', symbol: 'UZS' },
+  VEF: { currency: 'Venezuela Bolivar', symbol: 'Bs.F.' },
+  VND: { currency: 'Viet Nam Dong', symbol: '₫' },
+  VUV: { currency: 'Vanuatu Vatu' },
+  WST: { currency: 'Samoa Tala' },
+  XAF: { currency: 'Communauté Financière Africaine (BEAC) CFA Franc BEAC', symbol: 'FCFA' },
+  XCD: { currency: 'East Caribbean Dollar' },
+  XDR: { currency: 'International Monetary Fund (IMF) Special Drawing Rights' },
+  XOF: { currency: 'Communauté Financière Africaine (BCEAO) Franc', symbol: 'CFA' },
+  XPF: { currency: 'Comptoirs Français du Pacifique (CFP) Franc' },
+  YER: { currency: 'Yemen Rial', symbol: 'YR' },
+  ZAR: { currency: 'South Africa Rand', symbol: 'R' },
+  ZMW: { currency: 'Zambia Kwacha' },
+  ZWD: { currency: 'Zimbabwe Dollar' } }

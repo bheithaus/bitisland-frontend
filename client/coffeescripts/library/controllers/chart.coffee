@@ -10,11 +10,10 @@ angular.module 'BI.controllers'
       series.addPoint(randomBox(), true, true)
 
   $scope.chartData = chart
-  socket.on('connect', () ->
 
-  ).on('disconnect', () ->
-    console.log('disconnected');
-  )
+  socket.on 'update_chart', (data) ->
+    #console.log 'update with', data
+
 
 randomBox = (t) ->
   t = t || new Date().getTime()
