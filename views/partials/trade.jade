@@ -1,21 +1,27 @@
 div.trade  
   section.ticker-section
     div.ticker
-      div.col-xs-8(ng-controller='TickerCtrl')
-        span
-          span.title ask 
-          span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.ask | exchangeRate }}
-        
-        span
-          span.title bid 
-          span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.bid | exchangeRate }}
-        
-        span
-          span.title last trade 
+      div.col-xs-8
+        div.col-xs-6(ng-controller='TickerCtrl')
+          span
+            span.title ask 
+            span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.ask | exchangeRate }}
+          
+          span
+            span.title bid 
+            span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.bid | exchangeRate }}
+          
+          span
+            span.title last trade 
 
-          span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.last_trade | exchangeRate }}
+            span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.last_trade | exchangeRate }}
 
-          span.glyphicon(class="glyphicon-arrow-{{ up(ticker.last_trade) ? 'up' : 'down' }}", ng-class="up(ticker.last_trade) ? 'pos' : 'neg'")   
+            span.glyphicon(class="glyphicon-arrow-{{ up(ticker.last_trade) ? 'up' : 'down' }}", ng-class="up(ticker.last_trade) ? 'pos' : 'neg'")
+
+        marquee.col-xs-6(scrolldelay='200')
+          span(ng-repeat='order in orders')
+            span {{ order.price }}
+            span.glyphicon(class="glyphicon-arrow-{{ up(order.price) ? 'up' : 'down' }}", ng-class="up(order.price) ? 'pos' : 'neg'")
         
       div.input-group.col-xs-4(ng-controller='CurrencySwitch')
         input.form-control.currency(type="text",

@@ -25,3 +25,10 @@ angular.module 'BI.controllers'
         for key, val of data
           if val and val.price
             $scope.ticker[key] = val.price
+
+  socket.on 'update_completed_book', (data) ->
+    #console.log 'data', data
+    if data and data.orders
+      #console.log ''
+      $scope.$apply () ->
+        $scope.orders = data.orders

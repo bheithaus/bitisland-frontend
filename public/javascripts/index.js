@@ -357,7 +357,7 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
       return $scope.latestPrice = val;
     }
   });
-  return socket.on('update_ticker', function(data) {
+  socket.on('update_ticker', function(data) {
     if (data) {
       return $scope.$apply(function() {
         var key, val, _results;
@@ -371,6 +371,13 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
           }
         }
         return _results;
+      });
+    }
+  });
+  return socket.on('update_completed_book', function(data) {
+    if (data && data.orders) {
+      return $scope.$apply(function() {
+        return $scope.orders = data.orders;
       });
     }
   });
