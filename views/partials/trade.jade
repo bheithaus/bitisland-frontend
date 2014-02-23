@@ -1,4 +1,106 @@
 div.trade  
+  section#intro.ticker-section
+    div.container
+      div.row
+        div.col-xs-12
+          div.ticker
+            div.col-xs-8
+              p Trading Ticker
 
-  div.chart(ng-controller="ChartCtrl")
-    chart(value='chartData', height="200", width="400")
+            div.input-group.col-xs-4(ng-controller='CurrencySwitch')
+              input.form-control.currency(type="text", ng-model="selected", typeahead="currency as currency.code for currency in currencies | filter: { code: $viewValue } | limitTo:8", class="form-control")
+              span.input-group-addon {{ display.code }}
+
+  section.contents-section.clearfix
+    div.col-xs-4
+      h4 Market Order Book
+      div.table-card.exchange(ng-controller='ExchangeCtrl')
+        table.table
+          thead
+            tr
+              th time
+              th position
+              th quantity
+              th price
+              th tif
+
+          tbody
+            tr(ng-repeat='exchange in exchanges')
+              td {{ exchange.timestamp }}
+              td {{ exchange.position }}
+              td {{ exchange.visible }}
+              td.price {{ displayCurrency.code }} {{ exchange.price | exchangeRate }}
+
+              td {{ exchange.tif }}
+              
+            //- td.delta {{ exchange.delta }}
+            //-   span.glyphicon(ng-class='"glyphicon-arrow-" +(exchange.delta > 0 ? "up" : "down")')
+    div.col-xs-8
+      div.row
+        div.col-xs-6
+          div.purchase.clearfix(ng-controller='OrderCtrl')
+            div.col-xs-6(ng-class='activeOrder("market")')
+              h4 Market
+              div.form-group
+                label(for='quantity') quantity
+                input.form-control(ng-focus='focus("market")', type='number', positive-number, name='quantity', ng-model='quantity') 
+            
+            div.col-xs-6(ng-class='activeOrder("limit")')
+              h4 Limit
+              
+              div.form-group
+                label(for='quantity') quantity
+                input.form-control(ng-focus='focus("limit")', type='number', positive-number, name='quantity', ng-model='quantity')
+              
+              div.form-group
+                label(for='price') price
+                div.input-group
+                  div.input-group-addon
+                    span {{ displayCurrency.code }}
+                  input.form-control(ng-focus='active("limit")', type='number', ng-min='0', name='price', ng-model='price')
+
+          div.buy-sell(ng-controller='PurchaseCtrl')
+            div
+              button.btn.btn-lg.btn-success(type='button', ng-click='order("buy")')
+                | Buy
+
+              button.btn.btn-lg.btn-danger(type='button', ng-click='order("sell")')
+                | Sell
+              
+              button.btn.btn-lg.btn-warning(type='button', ng-click='cancel()')
+                | Cancel
+
+        div.col-xs-6
+          h4 Personal Account
+
+          div.table-card.account-summary(ng-controller='AccountCtrl')
+            table.table
+              thead
+                tr
+                  th time
+                  th position
+                  th quantity
+                  th price
+                  th tif
+
+              tbody
+                tr(ng-repeat='exchange in exchanges')
+                  td {{ exchange.timestamp }}
+                  td {{ exchange.position }}
+                  td {{ exchange.visible }}
+                  td.price {{ displayCurrency.code }} {{ exchange.price | exchangeRate }}
+
+                  td {{ exchange.tif }}
+    div.col-xs-8
+      div.price-chart.clearfix
+        div.chart(ng-controller="ChartCtrl")
+          chart(value='chartData', height="250", width="750")
+
+  section.footer
+    p.copyright.text-muted.small.text-center Copyright &copy; BitIsland 2014 All Rights Reserved
+
+
+script(type="text/ng-template", id="customTemplate.html").
+  a
+    span ${{ match.model.currency }}
+    span(bind-html-unsafe="match.label | typeaheadHighlight:query")

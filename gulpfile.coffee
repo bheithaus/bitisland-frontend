@@ -7,6 +7,8 @@ nodemon = require 'nodemon'
 jade = includeG 'jade'
 coffee = includeG 'coffee'
 concat = includeG 'concat'
+stylus = includeG 'stylus'
+
 uglify = includeG 'uglify'
 gutil = includeG 'util'
 concat = includeG 'concat'
@@ -62,18 +64,28 @@ scripts = () ->
   gulp.src path.scripts.src.client
     .pipe coffee({ bare: true })
     .on 'error', gutil.log 
-    .pipe concat('index.js') 
+    .pipe concat 'index.js'
     .pipe gulp.dest(path.scripts.dest)
 
   gulp.src vendor_js.bower.dependencies.concat vendor_js.vendor.dependencies
     .pipe concat('vendor.js')
     .pipe gulp.dest(path.scripts.dest)
 
+styles = () ->
+  gulp.src './client/stylesheets/*.styl'
+    .pipe stylus({
+      paths: ["/home/stylus-plugins/"]
+      set: ['compress']
+    })
+    .pipe concat 'style.css'
+    .pipe gulp.dest('./public/stylesheets')
 
 # Tasks
 gulp.task 'scripts', scripts
 
-gulp.task 'default', ['scripts']
+gulp.task 'styles', styles
+
+gulp.task 'default', ['scripts', 'styles']
 
 
 # You can minify your Jade Templates here
@@ -88,4 +100,5 @@ nodemon(
   script: 'app.coffee'
 ).on('restart', ->
   scripts()
+  styles()
 )

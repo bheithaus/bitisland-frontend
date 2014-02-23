@@ -61,8 +61,8 @@ httpsServer = https.createServer(credentials, app);
 
 ## start servers
 # https
-httpsServer.listen 3001, () =>
-  console.log 'Express HTTPS on port ' + 3001
+# httpsServer.listen 3001, () =>
+#   console.log 'Express HTTPS on port ' + 3001
 
 # http
 server.listen app.get('port'), () =>

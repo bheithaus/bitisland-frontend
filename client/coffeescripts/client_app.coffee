@@ -1,11 +1,13 @@
-gryfter = angular.module 'gryfter', [
+BI = angular.module 'BI', [
   'ui.router'
   'ui.bootstrap'
+  'ui.bootstrap.typeahead'
   'ngCookies'
   'ngResource'
-  'gryfter.controllers'
-  'gryfter.directives'
-  'gryfter.services'
+  'BI.controllers'
+  'BI.directives'
+  'BI.services'
+  'BI.filters'
 ]
 
 .config ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) ->

@@ -37,7 +37,9 @@ UserSchema.pre 'save', (next) ->
       next()
 
 UserSchema.methods.comparePassword = (candidatePassword, cb) ->
+  console.log candidatePassword, @password
   bcrypt.compare candidatePassword, @password, (error, isMatch) ->
+    console.log error, isMatch
     return cb error if error
     cb null, isMatch
 

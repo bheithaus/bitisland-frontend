@@ -63,7 +63,7 @@ module.exports =
       return res.json { errors: validationErrors } if Object.keys(validationErrors).length
 
       # remove confirmation
-      user.password = user.password[0]
+      delete user.password_confirm
 
       User.create user, (error, user) ->
         loginUser(user, res)
@@ -73,7 +73,11 @@ module.exports =
     res.json req.user
 
   login: (req, res, next) ->
+    console.log req.body
+
+
     User.findOne { name: req.body.name }, (err, user) -> 
+      console.log user
       if err or not user
         return res.json 400, { error: 'name / password dont match' }
     

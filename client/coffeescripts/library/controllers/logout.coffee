@@ -1,5 +1,5 @@
 # /* Controllers */
-angular.module 'gryfter.controllers'
+angular.module 'BI.controllers'
 
 .controller 'LogoutCtrl', ($scope, $http, Auth, $state) ->
   Auth.logout () ->

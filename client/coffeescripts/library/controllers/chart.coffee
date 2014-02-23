@@ -1,5 +1,5 @@
 # /* Controllers */
-angular.module 'gryfter.controllers'
+angular.module 'BI.controllers'
 
 .controller 'ChartCtrl', ($scope, $http, UserSession, socket) ->
   chart.series[0].data = DATA
@@ -18,16 +18,16 @@ angular.module 'gryfter.controllers'
 
 randomBox = (t) ->
   t = t || new Date().getTime()
-  open = Math.random() * 5 + 370
-  high = Math.random() * 8 + 368
-  low = Math.random() * 8 + 368
-  close = Math.random() * 5 + 370
+  open = Math.random() * 2 + 368
+  high = Math.random() * 3 + 368
+  low = Math.random() * 3 + 368
+  close = Math.random() * 2 + 368
 
   [t, open, high, low, close]
 
 chart =
   title:
-    text: 'AAPL stock price by minute'
+    text: 'Live BTI Market Data'
   
   credits: 
     enabled: false
@@ -41,8 +41,15 @@ chart =
   scrollbar:
     enabled: false
 
+  plotOptions:
+    candlestick:
+      lineColor: 'red'
+      upLineColor: 'green'
+      upColor: 'green'
+      
+
   series: [{
-    name: 'AAPL',
+    name: 'BCI',
     type: 'candlestick',
     data: '',
     tooltip: {
@@ -52,9 +59,7 @@ chart =
 
 first_stamp = 1317888000000
 
-DATA = [
-  [1317888000000,372.5101,375,372.2,372.52],
-]
+DATA = []
 
-_(100).times (i) ->
+_(50).times (i) ->
   DATA.push(randomBox(first_stamp + 1000 * i))

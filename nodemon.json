@@ -1,5 +1,6 @@
 {  "watch": [
-    "/client/coffeescripts/",
+    "/client/stylesheets/main.styl",
+    "/client/coffeescripts/*",
     "/app.coffee",
     "/route_map.coffee",
     "/routes/*",

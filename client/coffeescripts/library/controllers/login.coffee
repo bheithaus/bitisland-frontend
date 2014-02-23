@@ -1,5 +1,5 @@
 # /* Controllers */
-angular.module 'gryfter.controllers'
+angular.module 'BI.controllers'
 
 .controller 'LoginInstanceCtrl', ($scope, $modalInstance, Auth, $state) ->
   $scope.user = {}
@@ -11,7 +11,7 @@ angular.module 'gryfter.controllers'
     , (error) ->
       if not error
         $modalInstance.dismiss()
-        $state.transitionTo 'home'
+        $state.transitionTo 'trade'
       else 
         $scope.error = error
 

@@ -1,7 +1,8 @@
 'use strict'
 
 # /* Directives */
-angular.module 'gryfter.directives', []
+angular.module 'BI.directives', []
+
 .directive 'gryft', 
   () ->
     restrict: 'A'
@@ -17,7 +18,12 @@ angular.module 'gryfter.directives', []
         $scope.creator = meta.creator
         $scope.price = meta.price || 'no price'
 
-.directive( 'chart',  () ->
+.directive 'positiveNumber',  () ->
+  link: ($scope, elm, attrs, ctrl) ->
+    $scope.$watch attrs.ngModel, (newVal) ->
+      $scope[attrs.ngModel] = 0 if newVal < 0
+
+.directive 'chart',  () ->
   restrict: 'E'
   template: '<div></div>'
   scope: {
@@ -33,6 +39,18 @@ angular.module 'gryfter.directives', []
         type: attrs.type || null
         height: attrs.height || null
         width: attrs.width || null
+        backgroundColor: 'black'
+        
+      colors: [
+         '#DE2323', 
+         '#32DB14', 
+         '#FFFF38', 
+         '#FFFFFF', 
+         '#DE2323', 
+         '#32DB14', 
+         '#FFFF38', 
+         '#FFFFFF',
+      ]
 
     # Update when charts data changes
     $scope.$watch (-> $scope.chartData), (value) ->
@@ -51,7 +69,6 @@ angular.module 'gryfter.directives', []
       console.log newSettings
 
       chart = new Highcharts.StockChart newSettings
-    )
 
 
 

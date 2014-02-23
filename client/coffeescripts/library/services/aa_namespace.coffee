@@ -1,1 +1,1 @@
-angular.module 'gryfter.services', []
+angular.module 'BI.services', []

@@ -1,5 +1,6 @@
 io = require 'socket.io'
 socketioJwt = require 'socketio-jwt'
+routes = require '../routes'
 
 module.exports = (server) ->
   # socket.io
@@ -17,7 +18,13 @@ module.exports = (server) ->
     address = socket.handshake.address
     client_ip = address.address
 
-    setInterval () ->
+    update = () -> 
       if Math.random() > 0.3
         socket.emit 'update_graph'
-    , 2000
+
+      routes.orders.get (data) ->
+        socket.emit 'update_order_book', data.body
+
+
+    update()
+    setInterval update, 2000

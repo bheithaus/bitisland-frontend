@@ -1,4 +1,4 @@
-angular.module 'gryfter.services'
+angular.module 'BI.services'
 
 .factory 'LoginModal', ($modal, $log) ->
   open: () ->

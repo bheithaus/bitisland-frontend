@@ -1,5 +1,5 @@
 # /* Controllers */
-angular.module 'gryfter.controllers'
+angular.module 'BI.controllers'
 
 .controller 'HomeCtrl', ($scope, $http, $location, LoginModal, User) ->
   # handle login modal error here

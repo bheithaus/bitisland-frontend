@@ -1,7 +1,7 @@
 # /* Filters */
-angular.module 'myApp.filters', []
+angular.module 'BI.filters', []
 
-.filter 'interpolate', (version) ->
-  return (text) ->
-    return String(text).replace(/\%VERSION\%/mg, version)
+.filter 'exchangeRate', (selectedCurrency) ->
+  (price) ->
+    ( Number(price * selectedCurrency.value.rate).toFixed(3) )
 

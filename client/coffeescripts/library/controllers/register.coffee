@@ -1,5 +1,5 @@
 # /* Controllers */
-angular.module 'gryfter.controllers'
+angular.module 'BI.controllers'
 
 .controller 'RegisterInstanceCtrl', ($scope, $modalInstance, $state, Auth) ->
   $scope.user = {}

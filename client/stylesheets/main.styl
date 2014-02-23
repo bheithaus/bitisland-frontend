@@ -1,0 +1,153 @@
+
+
+// Colors
+disabled_color = hsl(0,0%,40%);
+background_light_blue = #0082C7
+background_medium_blue = #005FC7
+
+// Parent Classes
+.card {
+  padding: 10px;
+  border: 1px #898989 solid;
+  -webkit-box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
+}
+
+.table-card {
+  border: 1px #898989 solid;
+  -webkit-box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15); 
+}
+
+body {
+  width: 100%;
+  font-family: 'Arial' !important; 
+  background: background_light_blue;
+}
+
+html {
+  width: 100%;
+}
+
+.content {
+  margin-top: 51px;
+}
+
+@media(min-width:767px) {
+  .navbar {
+    padding: 0;
+    -webkit-transition: background .5s ease-in-out,padding .5s ease-in-out;
+    -moz-transition: background .5s ease-in-out,padding .5s ease-in-out;
+    transition: background .5s ease-in-out,padding .5s ease-in-out;
+  }
+
+  .top-nav-collapse {
+    padding: 0;
+  }
+}
+
+ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
+  font-family: 'Arial' !important; 
+  
+  a {
+    font-size: 18px;
+  }
+
+  button.btn-success {
+    margin-top: 10px;
+  }
+}
+
+.navbar-brand img {
+  height: 60px;
+  margin-top: -15px;
+  margin-right: 10px;
+}
+
+.ticker-section {
+  padding: 10px;
+  text-align: left;
+  font-size: 1.2em; 
+  background: #005FC7; 
+  background: -webkit-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#56bafb, #49b4fa, #03439a); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#56bafb, #49b4fa, #03439a); /* Standard syntax */
+  color: #CCCCCC;
+}
+
+.contents-section {
+  height: 100%;
+  text-align: left;
+  font-size: 1.2em;
+  background: black;
+  padding: 0 20px;
+  color: #CCCCCC;
+}
+
+.exchange, .account-summary {
+  @extend .table-card
+
+  .table {
+    thead {
+      background: hsl(0,0%,30%);
+
+      th {
+        font-size: 12px;
+      }
+    }
+
+    tr {
+      &.pos {
+        color: green;
+      }
+
+      &.neg {
+        color: red;
+      }
+    }
+
+    td {
+      font-size: 11px;
+    }
+  }
+}
+
+.account-summary li > div {
+  display: inline-block;
+
+  &.delta {
+    font-size: 10px;
+    margin: 10px;
+  }
+}
+
+.price-chart, .purchase {
+  @extend .card
+}
+
+.purchase {
+  > div.disabled {
+    color: disabled_color;
+
+    input {
+      background-color: disabled_color;
+    }
+  }
+}
+
+.buy-sell {
+  @extend .card
+
+  .btn {
+    margin: 20px;
+  }
+}
+
+.footer {
+  height: 60px;
+  width: 100%;    
+  padding: 20px;
+  background: background_light_blue;
+  color: #CCCCCC;
+}
