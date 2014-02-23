@@ -23,22 +23,23 @@ module.exports = (server) ->
       aggregated = {}
 
       #console.log 'aggregate this somehow...', data
-      for order, i in data.orders
-        if i is 0
-          aggregated.high = order.price
-          aggregated.low = order.price
-          aggregated.close = order.price
+      if data and data.orders
+        for order, i in data.orders
+          if i is 0
+            aggregated.high = order.price
+            aggregated.low = order.price
+            aggregated.close = order.price
 
-        if i is data.orders.length - 1
-          aggregated.open = order.price
+          if i is data.orders.length - 1
+            aggregated.open = order.price
 
-        if order.price > aggregated.high
-          aggregated.high = order.price
+          if order.price > aggregated.high
+            aggregated.high = order.price
 
-        if order.price < aggregated.low
-          aggregated.low = order.price
+          if order.price < aggregated.low
+            aggregated.low = order.price
 
-        cb aggregated
+          cb aggregated
 
 
 

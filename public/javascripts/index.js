@@ -353,7 +353,9 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
     last_trade: 0
   };
   $scope.$watch(LatestTrade.get, function(val) {
-    return $scope.latestPrice = val;
+    if (val) {
+      return $scope.latestPrice = val;
+    }
   });
   return socket.on('update_ticker', function(data) {
     if (data) {

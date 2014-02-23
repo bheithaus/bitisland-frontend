@@ -1,8 +1,8 @@
-coffeeboiler
+Bit Island
 ============
 
-# Express Angular CoffeeScript MongoDB Boilerplate
-This is meant to be a simple, easy to use seed for a rich client side Application, similar to MEAN stack, but in Coffeescript.
+# A Bitcoin ECN
+
 
 
 ## Technologies

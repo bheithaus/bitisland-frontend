@@ -15,7 +15,8 @@ angular.module 'BI.controllers'
     last_trade: 0
 
   $scope.$watch LatestTrade.get, (val) ->
-    $scope.latestPrice = val
+    if val
+      $scope.latestPrice = val
 
   socket.on 'update_ticker', (data) ->
     if data
