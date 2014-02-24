@@ -1,24 +1,24 @@
 div.trade  
   section.ticker-section
     div.ticker
-      div.col-xs-8
-        div.col-xs-6(ng-controller='TickerCtrl')
-          span
+      div.col-xs-8(ng-controller='TickerCtrl')
+        div.col-xs-7
+          span.latest
             span.title ask 
             span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.ask | exchangeRate }}
           
-          span
+          span.latest
             span.title bid 
             span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.bid | exchangeRate }}
           
-          span
+          span.latest
             span.title last trade 
 
             span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.last_trade | exchangeRate }}
 
             span.glyphicon(class="glyphicon-arrow-{{ up(ticker.last_trade) ? 'up' : 'down' }}", ng-class="up(ticker.last_trade) ? 'pos' : 'neg'")
 
-        marquee.col-xs-6(scrolldelay='200')
+        marquee.col-xs-5(scrollamount='2')
           span(ng-repeat='order in orders')
             span {{ order.price }}
             span.glyphicon(class="glyphicon-arrow-{{ up(order.price) ? 'up' : 'down' }}", ng-class="up(order.price) ? 'pos' : 'neg'")
