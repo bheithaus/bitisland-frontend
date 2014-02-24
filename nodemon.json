@@ -1,7 +1,8 @@
 {  "watch": [
+    "/app.coffee",
+    "/gulpfile.coffee"
     "/client/stylesheets/main.styl",
     "/client/coffeescripts/*",
-    "/app.coffee",
     "/route_map.coffee",
     "/routes/*",
     "/library/*"

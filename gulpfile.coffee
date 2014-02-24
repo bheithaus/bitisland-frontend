@@ -58,6 +58,9 @@ path =
 
     dest: './public/javascripts'
 
+  styles:
+    src: 'client/stylesheets/**/*.styl'
+    dest: 'public/stylesheets'
 
 # Functions
 scripts = () ->
@@ -72,20 +75,23 @@ scripts = () ->
     .pipe gulp.dest(path.scripts.dest)
 
 styles = () ->
-  gulp.src './client/stylesheets/*.styl'
-    .pipe stylus({
-      paths: ["/home/stylus-plugins/"]
-      set: ['compress']
-    })
-    .pipe concat 'style.css'
-    .pipe gulp.dest('./public/stylesheets')
+  console.log 'compiling stylesheets..'
+  
+  gulp.src path.styles.src
+    .pipe stylus({ use: ['nib'] })
+    .pipe concat('style.css') 
+    .pipe gulp.dest(path.styles.dest)
 
 # Tasks
 gulp.task 'scripts', scripts
-
 gulp.task 'styles', styles
 
-gulp.task 'default', ['scripts', 'styles']
+gulp.task 'watch', () ->
+  gulp.watch path.styles.src, () ->
+    styles()
+
+
+gulp.task 'default', ['scripts', 'styles', 'watch']
 
 
 # You can minify your Jade Templates here
