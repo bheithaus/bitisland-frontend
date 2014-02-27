@@ -1325,10 +1325,10 @@ BI = angular.module('BI', ['ui.router', 'ui.bootstrap', 'ui.bootstrap.typeahead'
     url: '/',
     templateUrl: 'partials/home',
     controller: 'HomeCtrl'
-  }).state('trade', {
-    url: '/trade',
-    templateUrl: 'partials/trade',
-    controller: 'TradeCtrl',
+  }).state('resume', {
+    url: '/resume',
+    templateUrl: 'partials/resume',
+    controller: 'ResumeCtrl',
     authenticate: true
   }).state('login', {
     controller: 'LoginCtrl'

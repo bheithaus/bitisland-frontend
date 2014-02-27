@@ -3,4 +3,6 @@ node_modules
 bower_components
 launch.pem
 public/javascripts/vendor.js
+public/javascripts/index.js
+
 deploy_vagrant/credentials.json
