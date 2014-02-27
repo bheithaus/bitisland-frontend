@@ -13,11 +13,11 @@ socket = library.socket
 GLOBAL.config = require './config'
 
 # fake
-privateKey  = fs.readFileSync 'sslcert/server.key', 'utf8'
-certificate = fs.readFileSync 'sslcert/server.crt', 'utf8'
-credentials = 
-  key: privateKey
-  cert: certificate
+# privateKey  = fs.readFileSync 'sslcert/server.key', 'utf8'
+# certificate = fs.readFileSync 'sslcert/server.crt', 'utf8'
+# credentials = 
+#   key: privateKey
+#   cert: certificate
 
 db = mongoose.connect config.db
 app = express()
