@@ -57,7 +57,7 @@ routes = require('./route_map')(app)
 
 # setup Servers
 server = http.createServer(app)
-httpsServer = https.createServer(credentials, app);
+# httpsServer = https.createServer(credentials, app);
 
 ## start servers
 # https
