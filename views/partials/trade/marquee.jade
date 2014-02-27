@@ -1,9 +1,10 @@
-marquee.col-xs-5(scrollamount='2')
+marquee.col-xs-6(scrollamount='2')
   span(ng-repeat='order in orders')
     span 
       em {{ order.position == 'buy' ? 'b': 's' }} 
     span {{ order.quantity }} 
     span @ 
+    span {{ displayCurrency.sym || displayCurrency.code }}
     span {{ order.price ? (order.price | exchangeRate) : '---' }}
     span.glyphicon(class="glyphicon-arrow-{{ up(order.price) ? 'up' : 'down' }}", ng-class="up(order.price) ? 'pos' : 'neg'")
         

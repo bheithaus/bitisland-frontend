@@ -305,9 +305,9 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
     return price >= $scope.latestPrice;
   };
   $scope.ticker = {
-    ask: '...',
-    bid: '...',
-    last_trade: '...'
+    ask: 0,
+    bid: 0,
+    last_trade: 0
   };
   $scope.$watch(LatestTrade.get, function(val) {
     if (val) {
@@ -1241,6 +1241,18 @@ angular.module('BI.directives', []).directive('gryft', function() {
         return chart = new Highcharts.StockChart(newSettings);
       });
     }
+  };
+}).directive('resizable', function($window) {
+  return function($scope, $element) {
+    $scope.initializeElementSize = function() {
+      $scope.elementHeight = $element.innerHeight;
+      return $scope.elementWidth = $element.innerWidth;
+    };
+    $scope.initializeElementSize();
+    return angular.element($window).bind('resize', function() {
+      $scope.initializeElementSize();
+      return $scope.$apply();
+    });
   };
 }).directive('tagManager', function() {
   return {

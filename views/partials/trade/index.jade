@@ -110,8 +110,8 @@ div.trade
 
     div.col-xs-8
       div.price-chart.clearfix
-        div.chart(ng-controller="ChartCtrl")
-          chart(value='chartData', height="250", width="750")
+        div.chart(resizable, ng-controller="ChartCtrl")
+          chart(value='chartData', height="250", width="{{ elementWidth }}")
 
   section.footer.clearfix
     p.small.text-center Copyright &copy; BitIsland 2014 All Rights Reserved

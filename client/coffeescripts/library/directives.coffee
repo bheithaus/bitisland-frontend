@@ -72,6 +72,19 @@ angular.module 'BI.directives', []
       chart = new Highcharts.StockChart newSettings
 
 
+.directive 'resizable', ($window) ->
+  ($scope, $element) ->
+    $scope.initializeElementSize = ->
+      $scope.elementHeight = $element.innerHeight
+      $scope.elementWidth  = $element.innerWidth
+
+    $scope.initializeElementSize()
+
+    angular.element($window).bind 'resize', ->
+      $scope.initializeElementSize()
+      $scope.$apply()
+
+
 
 .directive 'tagManager', () ->
     restrict: 'E'

@@ -47,7 +47,6 @@
   color: #ccc;
 }
 body {
-  max-width: 1300px;
   min-width: 1200px;
   width: 100%;
   font-family: 'Arial' !important;
@@ -127,11 +126,26 @@ ul.nav a.btn,
   font-weight: 300;
   font-size: 10px;
 }
-.ticker-section .latest {
-  margin: 0 15px;
+.ticker-section .latest_trades {
+  display: inline-block;
+  width: 355px;
+  float: left;
+  padding-top: 4px;
+  overflow: hidden;
+}
+.ticker-section .latest_trades .latest {
+  margin: 0 5px;
+}
+.ticker-section marquee {
+  float: right;
+  width: 368px;
+  -webkit-box-shadow: inset 3px 0px 20px rgba(34,34,34,0.1), inset -3px 0px 20px rgba(34,34,34,0.1);
+  box-shadow: inset 3px 0px 20px rgba(34,34,34,0.1), inset -3px 0px 20px rgba(34,34,34,0.1);
+  height: 30px;
+  padding-top: 4px;
 }
 .ticker-section marquee > span {
-  margin: 0 10px;
+  margin: 0 15px;
 }
 .contents-section {
   height: 100%;

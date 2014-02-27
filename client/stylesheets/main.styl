@@ -28,7 +28,6 @@ background_medium_blue = #005FC7
   color: #CCCCCC;
 }
 
-
 body {
   min-width: 1200px;
   width: 100%;
@@ -110,12 +109,27 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
     font-size: 10px;
   }
 
-  .latest {
-    margin: 0 15px;
+  .latest_trades {
+    display: inline-block;
+    width: 355px;
+    float: left;
+    padding-top: 4px;
+    overflow: hidden;
+
+    .latest {
+      margin: 0 5px;
+    }
   }
 
-  marquee > span {
-    margin: 0 10px;
+  marquee {
+    float: right;
+    width: 368px;
+    box-shadow: inset 3px 0px 20px rgba(34,34,34,0.1), inset -3px 0px 20px rgba(34,34,34,0.1);    height: 30px;
+    padding-top: 4px;
+
+    > span {
+      margin: 0 15px;
+    }
   }
 }
 
