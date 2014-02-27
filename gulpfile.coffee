@@ -19,7 +19,6 @@ vendor_js =
   bower:
     base: './bower_components/'
     dependencies: [
-      'angular/angular.js'
       'angular-ui-router/release/angular-ui-router.js'
       'angular-cookies/angular-cookies.js'
       'angular-resource/angular-resource.js'
