@@ -12,6 +12,7 @@ stylus = includeG 'stylus'
 uglify = includeG 'uglify'
 gutil = includeG 'util'
 concat = includeG 'concat'
+rest = require 'unirest'
 
 # Paths
 vendor_js = 
@@ -82,16 +83,33 @@ styles = () ->
     .pipe concat('style.css') 
     .pipe gulp.dest(path.styles.dest)
 
+cdn = () ->
+  console.log 'run cdn upload'
+  # needs API integration
+  # rest.put 'https://storage101.dfw1.clouddrive.com/v1/CF_xer7_343/'
+  #   .headers 
+  #     "ETag": "805120e285a7ed28f74024422fe3594"
+  #     "Content-Type": "image/jpeg"
+  #     "X-Auth-Token": "fc81aaa6-98a1-9ab0-94ba-aba9a89aa9ae"
+  #     "X-Object-Meta-Screenie": "Hello World"
+  #   .attach 'file', 'path/to/file'
+  #   .end (data) ->
+  #     console.log 'result', data
+
+
 # Tasks
 gulp.task 'scripts', scripts
 gulp.task 'styles', styles
+gulp.task 'cdn', cdn
 
 gulp.task 'watch', () ->
   gulp.watch path.styles.src, () ->
     styles()
 
+gulp.task 'cdn'
 
-gulp.task 'default', ['scripts', 'styles', 'watch']
+
+gulp.task 'default', ['scripts', 'styles', 'cdn', 'watch']
 
 
 # You can minify your Jade Templates here

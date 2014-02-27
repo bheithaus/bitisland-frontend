@@ -49,7 +49,6 @@
 body {
   width: 100%;
   font-family: 'Arial' !important;
-  background: #0082c7;
 }
 html {
   width: 100%;
@@ -149,7 +148,12 @@ ul.nav a.btn,
 }
 .exchange .table thead,
 .account-summary .table thead {
-  background: #363636;
+  padding: 0 10px;
+  background: -webkit-linear-gradient(top, hsl(0,0%,11%), hsl(0,0%,15%));
+  background: -moz-linear-gradient(top, hsl(0,0%,11%), hsl(0,0%,15%));
+  background: -o-linear-gradient(top, hsl(0,0%,11%), hsl(0,0%,15%));
+  background: -ms-linear-gradient(top, hsl(0,0%,11%), hsl(0,0%,15%));
+  background: linear-gradient(to bottom, hsl(0,0%,11%), hsl(0,0%,15%));
 }
 .exchange .table thead th,
 .account-summary .table thead th {

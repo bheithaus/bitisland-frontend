@@ -1,3 +1,5 @@
+@import 'nib'
+
 
 
 // Colors
@@ -31,11 +33,11 @@ background_medium_blue = #005FC7
 body {
   width: 100%;
   font-family: 'Arial' !important; 
-  background: background_light_blue;
 }
 
 html {
   width: 100%;
+
 }
 
 .content {
@@ -57,7 +59,7 @@ html {
 
 ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   font-family: 'Arial' !important; 
-  
+
   a {
     font-size: 18px;
   }
@@ -141,8 +143,8 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
 
   .table {
     thead {
-      background: hsl(0,0%,21%);
-
+      padding: 0 10px
+      background: linear-gradient(top, 'hsl(0,0%,11%)', 'hsl(0,0%,15%)')
       th {
         text-transform: uppercase;
         font-size: 12px;
