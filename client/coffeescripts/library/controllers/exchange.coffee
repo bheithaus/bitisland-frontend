@@ -9,16 +9,13 @@ angular.module 'BI.controllers'
     $scope.displayCurrency = selectedCurrency.value
 
   $scope.exchanges = [
-    { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
-    { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
-    { timestamp: 'thurs 2014', position: 'buy', price: 1200, visible: 20000, tif: 30320 }
-    { timestamp: 'thurs 2014', position: 'buy', price: 1134, visible: 20000, tif: 30320 }
+    { timestamp: 'No Orders on the books', price: 0 }
   ]
 
   socket.on 'update_pending_book', (data) ->
     #console.log 'heres the order book', data
     
-    if data and data.orders and data.orders.length
+    if data and data.orders
       $scope.$apply ->
         $scope.exchanges = data.orders
 

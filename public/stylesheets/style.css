@@ -47,8 +47,12 @@
   color: #ccc;
 }
 body {
+  max-width: 1300px;
+  min-width: 1200px;
   width: 100%;
   font-family: 'Arial' !important;
+  width: 100%;
+  background: #0082c7;
 }
 html {
   width: 100%;

@@ -14,43 +14,21 @@ angular.module('BI.controllers').controller('AccountCtrl', function($scope, $htt
   };
   $scope.exchanges = [
     {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1134,
-      visible: 20000,
-      tif: 30320
+      timestamp: 'LOADING....'
     }
   ];
   return socket.on('update_completed_book', function(data) {
-    if (data && data.orders && data.orders.length) {
+    if (data && data.orders) {
       return $scope.$apply(function() {
         var i;
-        $scope.latestPrice = null;
+        $scope.latestPrice = 0;
         i = 0;
         while (!($scope.latestPrice || i === data.orders.length)) {
           $scope.latestPrice = data.orders[i].price;
           i++;
         }
         LatestTrade.set($scope.latestPrice);
-        return $scope.exchanges = data.orders.slice(0, 7);
+        return $scope.exchanges = data.orders.slice(0, 5);
       });
     }
   });
@@ -131,33 +109,12 @@ angular.module('BI.controllers').controller('ExchangeCtrl', function($scope, $ht
   });
   $scope.exchanges = [
     {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1200,
-      visible: 20000,
-      tif: 30320
-    }, {
-      timestamp: 'thurs 2014',
-      position: 'buy',
-      price: 1134,
-      visible: 20000,
-      tif: 30320
+      timestamp: 'No Orders on the books',
+      price: 0
     }
   ];
   return socket.on('update_pending_book', function(data) {
-    if (data && data.orders && data.orders.length) {
+    if (data && data.orders) {
       return $scope.$apply(function() {
         return $scope.exchanges = data.orders;
       });
@@ -348,9 +305,9 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
     return price >= $scope.latestPrice;
   };
   $scope.ticker = {
-    ask: 0,
-    bid: 0,
-    last_trade: 0
+    ask: '...',
+    bid: '...',
+    last_trade: '...'
   };
   $scope.$watch(LatestTrade.get, function(val) {
     if (val) {
@@ -364,8 +321,10 @@ angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http
         _results = [];
         for (key in data) {
           val = data[key];
-          if (val && val.price) {
+          if (val && typeof val.price === 'number') {
             _results.push($scope.ticker[key] = val.price);
+          } else if (typeof val === 'number') {
+            _results.push($scope.ticker[key] = val);
           } else {
             _results.push(void 0);
           }
@@ -588,7 +547,6 @@ angular.module('BI.services').factory('Session', function($resource) {
     }
     currencyChoices.array = completedCurrencyChoices.array;
     currencyChoices.obj = completedCurrencyChoices.obj;
-    console.log('CURREncy', currencyChoices);
     currencyChoices.notify();
     return selectedCurrency.set(USD);
   }).error(function(data) {
@@ -1325,10 +1283,10 @@ BI = angular.module('BI', ['ui.router', 'ui.bootstrap', 'ui.bootstrap.typeahead'
     url: '/',
     templateUrl: 'partials/home',
     controller: 'HomeCtrl'
-  }).state('resume', {
-    url: '/resume',
-    templateUrl: 'partials/resume',
-    controller: 'ResumeCtrl',
+  }).state('trade', {
+    url: '/trade',
+    templateUrl: 'partials/trade/index',
+    controller: 'TradeCtrl',
     authenticate: true
   }).state('login', {
     controller: 'LoginCtrl'

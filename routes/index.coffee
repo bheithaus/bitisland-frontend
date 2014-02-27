@@ -5,7 +5,7 @@ module.exports =
 
   index: (req, res) ->
     res.render 'index', { 
-      title: 'Express'
+      title: 'BitIsland'
       user: req.user
     }
 

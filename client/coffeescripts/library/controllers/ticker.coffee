@@ -10,21 +10,24 @@ angular.module 'BI.controllers'
     price >= $scope.latestPrice
 
   $scope.ticker = 
-    ask: 0
-    bid: 0
-    last_trade: 0
+    ask: '...'
+    bid: '...'
+    last_trade: '...'
 
+  # track the price of the latest trade
   $scope.$watch LatestTrade.get, (val) ->
     if val
       $scope.latestPrice = val
 
+  # ticker update
   socket.on 'update_ticker', (data) ->
     if data
       $scope.$apply ->
-
         for key, val of data
-          if val and val.price
+          if val and typeof val.price is 'number'
             $scope.ticker[key] = val.price
+          else if typeof val is 'number'
+            $scope.ticker[key] = val
 
   socket.on 'update_completed_book', (data) ->
     #console.log 'data', data

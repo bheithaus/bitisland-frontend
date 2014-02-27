@@ -1,0 +1,15 @@
+div.col-xs-7
+  span.latest
+    span.title ask 
+    span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.ask | exchangeRate }}
+  
+  span.latest
+    span.title bid 
+    span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.bid | exchangeRate }}
+  
+  span.latest
+    span.title last trade 
+
+    span.num{{ displayCurrency.sym || displayCurrency.code }}{{ ticker.last_trade | exchangeRate }}
+
+    span.glyphicon(class="glyphicon-arrow-{{ up(ticker.last_trade) ? 'up' : 'down' }}", ng-class="up(ticker.last_trade) ? 'pos' : 'neg'")

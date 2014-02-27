@@ -155,8 +155,6 @@ angular.module 'BI.services'
     currencyChoices.array = completedCurrencyChoices.array
     currencyChoices.obj = completedCurrencyChoices.obj
 
-    console.log 'CURREncy', currencyChoices
-
     currencyChoices.notify()
     selectedCurrency.set USD
 

@@ -1,0 +1,123 @@
+div.trade  
+  section.ticker-section
+    div.ticker
+      div.col-xs-8(ng-controller='TickerCtrl')
+        include latest_trades
+
+        include marquee
+
+      div.input-group.col-xs-4(ng-controller='CurrencySwitch')
+        input.form-control.currency(type="text",
+        placeholder='display currency',
+        ng-model="selected",
+        typeahead="currency as currency.name for currency in currencies | filter: { code: $viewValue } | limitTo:8",
+        class="form-control")
+        span.input-group-addon {{ display.code }}
+
+  section.contents-section.clearfix
+    div.col-xs-4
+      h4 Pending Order Book
+      div.table-card.exchange(ng-controller='ExchangeCtrl')
+        table.table
+          thead
+            tr
+              th(style="width: 130px") time
+              th pos
+              th v
+              th {{ displayCurrency.sym || displayCurrency.code }} 
+              th tif
+              th mkt
+
+          tbody
+            tr(ng-repeat='exchange in exchanges')
+              td {{ exchange.timestamp }}
+              td {{ exchange.position }}
+              td {{ exchange.visible }}
+              td(ng-hide="exchange.price == 0") {{ exchange.price | exchangeRate }}
+              td(ng-show="exchange.price == 0") ----           
+              td {{ exchange.tif }}
+              td {{ exchange.market }}
+            //- td.delta {{ exchange.delta }}
+            //-   span.glyphicon(ng-class='"glyphicon-arrow-" +(exchange.delta > 0 ? "up" : "down")')
+   
+    div.col-xs-8
+      div.row
+        div.col-xs-6
+          div.purchase.clearfix(ng-controller='OrderCtrl')
+            select.col-xs-4(style='margin-bottom: 20px;', ng-model="orderType", ng-options="type for type in orderTypes")
+            select.col-xs-4(style='margin-bottom: 20px;', ng-model="tif", ng-options="tif for tif in tifTypes")
+            select.col-xs-4(style='margin-bottom: 20px;', ng-model="market", ng-options="market for market in marketTypes")
+           
+            div.col-xs-6
+              div.form-group
+                label(for='quantity') quantity
+                input.form-control(type='number', positive-number, name='quantity', ng-model='quantity')
+              
+              div.form-group
+                label(for='price') price
+
+                div.input-group
+                  div.input-group-addon
+                    span {{ displayCurrency.code }}
+
+                  input.form-control(ng-disabled='active("market")', type='number', ng-min='0', name='price', ng-model='price')
+
+            div.col-xs-6
+              div.form-group
+                label(for='visible') visible
+                input.form-control(ng-focus='editVisible()', ng-disabled='active("hidden")', type='number', ng-min='0', name='visible', ng-model='visible')
+
+
+
+          div.buy-sell(ng-controller='PurchaseCtrl')
+            div
+              button.btn.btn-lg.btn-success(type='button', ng-click='order("buy")')
+                | Buy
+
+              button.btn.btn-lg.btn-danger(type='button', ng-click='order("sell")')
+                | Sell
+              
+              button.btn.btn-lg.btn-warning(type='button', ng-click='cancel()')
+                | Cancel
+
+        div.col-xs-6
+          h4 Completed Orders
+
+          div.table-card.account-summary(ng-controller='AccountCtrl')
+            table.table
+              thead
+                tr
+                  th(style="width: 130px") time
+                  th pos
+                  th v
+                  th {{ displayCurrency.sym || displayCurrency.code }} 
+                  th 
+                    span.glyphicon.glyphicon-sort
+                  th tif
+                  th mkt
+
+              tbody
+                tr(ng-repeat='exchange in exchanges', ng-class="up(exchange.price) ? 'pos' : 'neg'")
+                  td {{ exchange.timestamp }}
+                  td {{ exchange.position }}
+                  td {{ exchange.visible }}
+                  td(ng-hide="exchange.price == 0") {{ exchange.price | exchangeRate }}
+                  td(ng-show="exchange.price == 0") ----   
+                  td 
+                    span.glyphicon(class="glyphicon-arrow-{{ up(exchange.price) ? 'up' : 'down' }}")   
+                  td {{ exchange.tif }}
+                  td {{ exchange.market }}
+
+    div.col-xs-8
+      div.price-chart.clearfix
+        div.chart(ng-controller="ChartCtrl")
+          chart(value='chartData', height="250", width="750")
+
+  section.footer.clearfix
+    p.small.text-center Copyright &copy; BitIsland 2014 All Rights Reserved
+
+
+  script(type="text/ng-template", id="customTemplate.html").
+    a
+      span {{ match.model.sym }}
+      span(bind-html-unsafe="match.label | typeaheadHighlight:query")

@@ -22,10 +22,10 @@ BI = angular.module 'BI', [
       templateUrl: 'partials/home'
       controller: 'HomeCtrl'
 
-    .state 'resume',
-      url: '/resume'
-      templateUrl: 'partials/resume'
-      controller: 'ResumeCtrl'
+    .state 'trade',
+      url: '/trade'
+      templateUrl: 'partials/trade/index'
+      controller: 'TradeCtrl'
       authenticate: true
 
     .state 'login',
