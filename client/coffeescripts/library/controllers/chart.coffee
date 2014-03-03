@@ -9,10 +9,8 @@ angular.module 'BI.controllers'
     socket.on 'update_graph', () ->
       series.addPoint(randomBox(), true, true)
 
+  # set initial value
   $scope.chartData = chart
-
-  socket.on 'update_chart', (data) ->
-    #console.log 'update with', data
 
 
 randomBox = (t) ->
@@ -44,8 +42,7 @@ chart =
     candlestick:
       lineColor: 'red'
       upLineColor: 'green'
-      upColor: 'green'
-      
+      upColor: 'rgba(0,200,0,0.6)'
 
   series: [{
     name: 'BCI',

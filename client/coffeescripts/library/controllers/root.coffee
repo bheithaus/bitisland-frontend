@@ -19,3 +19,7 @@ angular.module 'BI.controllers'
   $scope.user = UserSession
 
 
+  $scope.color = 'dark'
+  $scope.toggleColor = ->
+    $scope.color = if $scope.color is 'dark' then 'light' else 'dark'
+    console.log 'color', $scope.color

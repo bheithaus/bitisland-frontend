@@ -8,7 +8,7 @@ background_medium_blue = #005FC7
 // Parent Classes
 .card {
   padding: 10px;
-  border: 1px hsla(0,0%,100%,0.2) solid;
+  border: 1px hsla(0,0%,100%,0.2) solid;  
   -webkit-box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
   box-shadow: 0 3px 3px 0 rgba(0,0,0,0.15);
 }
@@ -28,21 +28,28 @@ background_medium_blue = #005FC7
   color: #CCCCCC;
 }
 
-body {
-  min-width: 1200px;
-  width: 100%;
-  font-family: 'Arial' !important; 
-  width: 100%;
-  background: #0082c7;
-}
-
 html {
   width: 100%;
-
+  height: 100%;
 }
 
-.content {
+body {
+  min-width: 1200px;
+  font-family: 'Arial' !important; 
+  height: 100%;
+  width: 100%;
   margin-top: 51px;
+}
+
+.navbar-fixed-top {
+  .container {
+    width: auto
+  }
+}
+
+
+.wrapper {
+  height: 100%;
 }
 
 @media (min-width:767px) {
@@ -57,6 +64,61 @@ html {
     padding: 0;
   }
 }
+
+//  Color switcher
+.navbar-fixed-top .btn.theme {
+  &.dark {
+    color: white
+    background: black
+  }
+  &.light {
+    color: black
+    background: white
+  }
+}
+
+.trade {
+  &.dark {
+    select {
+      background: grey;
+      color: black;
+    }
+
+    .contents-section {
+      background: black
+      color: #CCCCCC;
+    }
+
+    table thead {
+      background: linear-gradient(top, 'hsl(0,0%,11%)', 'hsl(0,0%,15%)')
+      
+      th {
+        border-bottom: 1px solid hsl(0,0%,26%)
+      }
+    }
+  }
+
+  &.light {
+    select {
+      background: white;
+      color: black;
+    }
+
+    .contents-section {
+      background: none
+      color: black;
+    }
+
+    table thead {
+      background: linear-gradient(top, 'hsl(0,0%,91%)', 'hsl(0,0%,76%)')
+      
+      th {
+        border-bottom: 1px solid hsl(0,0%,76%)
+      }
+    }    
+  }
+}
+
 
 ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   font-family: 'Arial' !important; 
@@ -137,9 +199,7 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   height: 100%;
   text-align: left;
   font-size: 1.2em;
-  background: black;
   padding: 0 20px;
-  color: #CCCCCC;
 }
 
 .pos {
@@ -160,11 +220,10 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   .table {
     thead {
       padding: 0 10px
-      background: linear-gradient(top, 'hsl(0,0%,11%)', 'hsl(0,0%,15%)')
+
       th {
         text-transform: uppercase;
         font-size: 12px;
-        border-bottom: 1px solid hsl(0,0%,26%);
       }
     }
 
@@ -197,9 +256,6 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   @extend .card
 
   select {
-    background: grey;
-    color: black;
-
     &:last-of-type {
       text-transform: uppercase;
     }
@@ -214,7 +270,7 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   @extend .card
 
   .btn {
-    margin: 20px;
+    margin: 20px 10px;
   }
 }
 
@@ -223,6 +279,8 @@ ul.nav, .collapse, .navbar-collapse, .navbar-ex1-collapse {
   width: 100%;    
   padding: 5px 35px;
   color: black;
+  position: fixed;
+  bottom: 0;
 
   p {
     margin: 0

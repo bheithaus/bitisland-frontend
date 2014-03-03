@@ -7,10 +7,10 @@ html
       yield
 
   body(ng-app="BI")
-    div(ng-controller='AppCtrl')
+    div(ng-controller='AppCtrl').wrapper
       include Framework/header
 
-      div
+      div.wrapper
         block content
           yield
 

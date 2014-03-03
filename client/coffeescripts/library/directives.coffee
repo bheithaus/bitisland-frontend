@@ -26,34 +26,24 @@ angular.module 'BI.directives', []
 .directive 'chart',  () ->
   restrict: 'E'
   template: '<div></div>'
-  scope: {
-      chartData: "=value"
-  }
+  scope: { chartData: "=value" }
   transclude: true
   replace: true
 
   link:  ($scope, element, attrs) ->
-    chartsDefaults =
+    chartDefaults =
       chart:
         renderTo: element[0]
         type: attrs.type || null
         height: attrs.height || null
         width: attrs.width || null
-        backgroundColor: 'black'
-        
+
       colors: [
-         '#DE2323', 
-         '#32DB14', 
-         '#FFFF38', 
-         '#FFFFFF', 
-         '#DE2323', 
-         '#32DB14', 
-         '#FFFF38', 
-         '#FFFFFF',
+        'rgba(200,0,0,0.6)'
       ]
 
-    # Update when charts data changes
-    $scope.$watch (-> $scope.chartData), (value) ->
+    updateChart = (value) ->
+      console.log 'update Chart'
       return if not value
 
       # handle live updating
@@ -61,15 +51,22 @@ angular.module 'BI.directives', []
       delete $scope.chartData.updater
 
       newSettings = {}
-      angular.extend(newSettings, chartsDefaults, $scope.chartData)
+      angular.extend(newSettings, chartDefaults, $scope.chartData)
 
       if updater
         newSettings.chart.events = 
           load: updater
       
-      #console.log newSettings
-
       chart = new Highcharts.StockChart newSettings
+      
+
+    # on color change
+    $scope.$watch (-> attrs.color), (color) ->
+      chartDefaults.chart.backgroundColor = if color is 'light' then 'white' else 'black'
+      updateChart($scope.chartData)
+
+    # Update when charts data changes
+    # $scope.$watch (-> $scope.chartData), updateChart
 
 
 .directive 'resizable', ($window) ->

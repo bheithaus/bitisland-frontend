@@ -45,8 +45,7 @@ angular.module('BI.controllers').controller('ChartCtrl', function($scope, $http,
       return series.addPoint(randomBox(), true, true);
     });
   };
-  $scope.chartData = chart;
-  return socket.on('update_chart', function(data) {});
+  return $scope.chartData = chart;
 });
 
 randomBox = function(t) {
@@ -79,7 +78,7 @@ chart = {
     candlestick: {
       lineColor: 'red',
       upLineColor: 'green',
-      upColor: 'green'
+      upColor: 'rgba(0,200,0,0.6)'
     }
   },
   series: [
@@ -293,7 +292,12 @@ angular.module('BI.controllers').controller('AppCtrl', function($scope, $locatio
   $scope.loggedIn = function() {
     return UserSession.loggedIn();
   };
-  return $scope.user = UserSession;
+  $scope.user = UserSession;
+  $scope.color = 'dark';
+  return $scope.toggleColor = function() {
+    $scope.color = $scope.color === 'dark' ? 'light' : 'dark';
+    return console.log('color', $scope.color);
+  };
 });
 
 angular.module('BI.controllers').controller('TickerCtrl', function($scope, $http, UserSession, socket, selectedCurrency, LatestTrade) {
@@ -1211,34 +1215,38 @@ angular.module('BI.directives', []).directive('gryft', function() {
     transclude: true,
     replace: true,
     link: function($scope, element, attrs) {
-      var chartsDefaults;
-      chartsDefaults = {
+      var chartDefaults, updateChart;
+      chartDefaults = {
         chart: {
           renderTo: element[0],
           type: attrs.type || null,
           height: attrs.height || null,
-          width: attrs.width || null,
-          backgroundColor: 'black'
+          width: attrs.width || null
         },
-        colors: ['#DE2323', '#32DB14', '#FFFF38', '#FFFFFF', '#DE2323', '#32DB14', '#FFFF38', '#FFFFFF']
+        colors: ['rgba(200,0,0,0.6)']
       };
-      return $scope.$watch((function() {
-        return $scope.chartData;
-      }), function(value) {
+      updateChart = function(value) {
         var chart, newSettings, updater;
+        console.log('update Chart');
         if (!value) {
           return;
         }
         updater = $scope.chartData.updater;
         delete $scope.chartData.updater;
         newSettings = {};
-        angular.extend(newSettings, chartsDefaults, $scope.chartData);
+        angular.extend(newSettings, chartDefaults, $scope.chartData);
         if (updater) {
           newSettings.chart.events = {
             load: updater
           };
         }
         return chart = new Highcharts.StockChart(newSettings);
+      };
+      return $scope.$watch((function() {
+        return attrs.color;
+      }), function(color) {
+        chartDefaults.chart.backgroundColor = color === 'light' ? 'white' : 'black';
+        return updateChart($scope.chartData);
       });
     }
   };
