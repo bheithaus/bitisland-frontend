@@ -50,10 +50,10 @@ div.trade.wrapper.clearfix(ng-class='color')
                 select.form-control(name='orderType',style='margin-bottom: 20px;', ng-model="orderType", ng-options="type for type in orderTypes")
               div.col-xs-4
                 label.center-block(for='tif') TIF
-                select(name='tif', style='margin-bottom: 20px;', ng-model="tif", ng-options="tif for tif in tifTypes")
+                select.form-control(name='tif', style='margin-bottom: 20px;', ng-model="tif", ng-options="tif for tif in tifTypes")
               div.col-xs-4         
                 label.center-block(for='market') Market
-                select(name='market', style='margin-bottom: 20px;', ng-model="market", ng-options="market for market in marketTypes")
+                select.form-control(name='market', style='margin-bottom: 20px;', ng-model="market", ng-options="market for market in marketTypes")
             
             div.row
               div.col-xs-6
