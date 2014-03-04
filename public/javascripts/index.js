@@ -42,7 +42,6 @@ angular.module('BI.controllers').controller('ChartCtrl', function($scope, $http,
     var series;
     series = this.series[0];
     return socket.on('update_graph', function(data) {
-      console.log('graph data', data);
       if (data && data.length === 5) {
         return series.addPoint(data, true, true);
       }

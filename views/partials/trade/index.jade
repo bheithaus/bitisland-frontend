@@ -23,14 +23,14 @@ div.trade.wrapper.clearfix(ng-class='color')
             tr
               th(style="width: 130px") time
               th pos
-              th v
+              th qty
               th {{ displayCurrency.sym || displayCurrency.code }} 
               th tif
               th mkt
 
           tbody
             tr(ng-repeat='exchange in exchanges')
-              td {{ exchange.timestamp }}
+              td {{ exchange.timestamp | date : 'HH:mm:ss Z' }}
               td {{ exchange.position }}
               td {{ exchange.visible }}
               td(ng-hide="exchange.price == 0") {{ exchange.price | exchangeRate }}
@@ -97,7 +97,7 @@ div.trade.wrapper.clearfix(ng-class='color')
                 tr
                   th(style="width: 130px") time
                   th pos
-                  th v
+                  th qty
                   th {{ displayCurrency.sym || displayCurrency.code }} 
                   th 
                     span.glyphicon.glyphicon-sort
@@ -106,7 +106,7 @@ div.trade.wrapper.clearfix(ng-class='color')
 
               tbody
                 tr(ng-repeat='exchange in exchanges', ng-class="up(exchange.price) ? 'pos' : 'neg'")
-                  td {{ exchange.timestamp }}
+                  td {{ exchange.timestamp | date : 'HH:mm:ss Z' }}
                   td {{ exchange.position }}
                   td {{ exchange.visible }}
                   td(ng-hide="exchange.price == 0") {{ exchange.price | exchangeRate }}

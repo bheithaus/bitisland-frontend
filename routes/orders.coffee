@@ -11,7 +11,7 @@ ORDER =
 
 fakeData = ->
   timestamp: new Date().getTime()
-  position: 'buy'
+  position: if Math.random() > 0.5 then 'buy' else 'sell'
   visible: if Math.random() > 0.3 then Math.floor(Math.random() * 2000) else 0
   price: Math.random() * 50 + 560
   tif: 'tif'
@@ -32,7 +32,7 @@ handleBrokenBackend = (callback, type) ->
           body:
             orders: []
 
-        utils(5).times () ->
+        utils(15).times () ->
           data.body.orders.push fakeData()
     
     callback data
