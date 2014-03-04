@@ -2,7 +2,38 @@ io = require 'socket.io'
 socketioJwt = require 'socketio-jwt'
 routes = require '../routes'
 
+# aggregate data here
+aggregate = (data, cb) ->
+  aggregated = {}
+
+  #console.log 'aggregate this somehow...', data
+  if data and data.orders
+    for order, i in data.orders
+      if i is 0
+        aggregated.high = order.price
+        aggregated.low = order.price
+        aggregated.close = order.price
+
+      if i is data.orders.length - 1
+        aggregated.open = order.price
+
+      if order.price > aggregated.high
+        aggregated.high = order.price
+
+      if order.price < aggregated.low
+        aggregated.low = order.price
+
+    cb [
+      new Date().getTime()
+      aggregated.open
+      aggregated.high
+      aggregated.low
+      aggregated.close
+    ]
+
+
 module.exports = (server) ->
+  intervalID = null
   # socket.io
   io = io.listen server
   io.set 'log level', 1
@@ -15,51 +46,30 @@ module.exports = (server) ->
   io.sockets.on 'connection', (socket) ->
     #console.log socket.handshake.decoded_token.email, 'connected'
 
+    _connected = io.sockets.clients().filter((socket) -> socket isnt null).length
+
+    socket.on 'disconnect', () ->
+      _connected = io.sockets.clients().filter((socket) -> socket isnt null).length
+
     address = socket.handshake.address
     client_ip = address.address
 
-    # aggregate data here
-    aggregate = (data, cb) ->
-      aggregated = {}
-
-      #console.log 'aggregate this somehow...', data
-      if data and data.orders
-        for order, i in data.orders
-          if i is 0
-            aggregated.high = order.price
-            aggregated.low = order.price
-            aggregated.close = order.price
-
-          if i is data.orders.length - 1
-            aggregated.open = order.price
-
-          if order.price > aggregated.high
-            aggregated.high = order.price
-
-          if order.price < aggregated.low
-            aggregated.low = order.price
-
-          cb aggregated
-
-
-
-    update = () -> 
-      if Math.random() > 0.3
-        socket.emit 'update_graph'
+    update = () ->
+      return clearInterval intervalID if not _connected
 
       routes.orders.pending (data) ->
-        socket.emit 'update_pending_book', data.body
-
+        io.sockets.emit 'update_pending_book', data.body
       
       routes.orders.completed (data) ->
-        socket.emit 'update_completed_book', data.body
+        io.sockets.emit 'update_completed_book', data.body
 
         aggregate data.body, (result) ->
-          socket.emit 'update_chart', result
+          io.sockets.emit 'update_graph', result
 
       routes.orders.ticker (data) ->
-        socket.emit 'update_ticker', data.body
+        io.sockets.emit 'update_ticker', data.body
 
     update()
-    setInterval update, 2000
+    clearInterval intervalID
+    intervalID = setInterval update, 2000
 

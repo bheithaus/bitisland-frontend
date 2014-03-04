@@ -6,19 +6,20 @@ angular.module 'BI.controllers'
   chart.updater = ->
     # set up the updating of the chart from socket
     series = @series[0]
-    socket.on 'update_graph', () ->
-      series.addPoint(randomBox(), true, true)
+    socket.on 'update_graph', (data) ->
+      if data and data.length is 5
+        series.addPoint(data, true, true)
 
   # set initial value
   $scope.chartData = chart
 
-
+# generate a random data point for the chart
 randomBox = (t) ->
   t = t || new Date().getTime()
-  open = Math.random() * 2 + 368
-  high = Math.random() * 3 + 368
-  low = Math.random() * 3 + 368
-  close = Math.random() * 2 + 368
+  open = Math.random() * 20 + 570
+  high = Math.random() * 30 + 570
+  low = Math.random() * 30 + 570
+  close = Math.random() * 20 + 570
 
   [t, open, high, low, close]
 

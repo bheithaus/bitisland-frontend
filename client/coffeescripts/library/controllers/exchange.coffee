@@ -13,8 +13,7 @@ angular.module 'BI.controllers'
   ]
 
   socket.on 'update_pending_book', (data) ->
-    #console.log 'heres the order book', data
-    
+    # console.log 'heres the order book', data
     if data and data.orders
       $scope.$apply ->
         $scope.exchanges = data.orders

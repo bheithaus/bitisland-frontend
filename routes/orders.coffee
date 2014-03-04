@@ -9,24 +9,51 @@ ORDER =
     tif: 'day'
     price: 0
 
+fakeData = ->
+  timestamp: new Date().getTime()
+  position: 'buy'
+  visible: if Math.random() > 0.3 then Math.floor(Math.random() * 2000) else 0
+  price: Math.random() * 50 + 560
+  tif: 'tif'
+  market: 'BTI'
+
+handleBrokenBackend = (callback, type) ->
+  (data) ->
+    if data.error
+      # insert test data
+      if type is 'ticker'
+        data = 
+          body:
+            ask: Math.random() * 50 + 570
+            bid: Math.random() * 50 + 570
+            last_trade: Math.random() * 50 + 570
+      else
+        data = 
+          body:
+            orders: []
+
+        utils(5).times () ->
+          data.body.orders.push fakeData()
+    
+    callback data
+
+
 module.exports =
   pending: (callback) ->
     unirest.get ORDER.base + 'latest_orders'
-      .end callback
+      .end handleBrokenBackend(callback)
 
   completed: (callback) ->
     unirest.get ORDER.base + 'completed_orders'
-      .end callback
+      .end handleBrokenBackend(callback)
 
   ticker: (callback) ->
     unirest.get ORDER.base + 'ticker'
-      .end callback
+      .end handleBrokenBackend(callback, 'ticker')
 
   create: (req, res) ->
     # create new order { type: 'market', quantity: 100, position: 'buy' }
     order = {}
-
-    console.log 'from frontend', req.body
 
     if req.body.type == 'market'
       delete req.body.price

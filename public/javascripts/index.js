@@ -41,8 +41,11 @@ angular.module('BI.controllers').controller('ChartCtrl', function($scope, $http,
   chart.updater = function() {
     var series;
     series = this.series[0];
-    return socket.on('update_graph', function() {
-      return series.addPoint(randomBox(), true, true);
+    return socket.on('update_graph', function(data) {
+      console.log('graph data', data);
+      if (data && data.length === 5) {
+        return series.addPoint(data, true, true);
+      }
     });
   };
   return $scope.chartData = chart;
@@ -51,10 +54,10 @@ angular.module('BI.controllers').controller('ChartCtrl', function($scope, $http,
 randomBox = function(t) {
   var close, high, low, open;
   t = t || new Date().getTime();
-  open = Math.random() * 2 + 368;
-  high = Math.random() * 3 + 368;
-  low = Math.random() * 3 + 368;
-  close = Math.random() * 2 + 368;
+  open = Math.random() * 20 + 570;
+  high = Math.random() * 30 + 570;
+  low = Math.random() * 30 + 570;
+  close = Math.random() * 20 + 570;
   return [t, open, high, low, close];
 };
 
