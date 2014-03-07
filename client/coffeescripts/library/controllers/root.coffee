@@ -12,7 +12,6 @@ angular.module 'BI.controllers'
   $scope.login = LoginModal.open
   $scope.register = RegisterModal.open
 
-  $scope.errors = $location.search().incorrect
   $scope.loggedIn = ->
     UserSession.loggedIn()
 

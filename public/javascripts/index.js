@@ -290,7 +290,6 @@ angular.module('BI.controllers').controller('AppCtrl', function($scope, $locatio
   };
   $scope.login = LoginModal.open;
   $scope.register = RegisterModal.open;
-  $scope.errors = $location.search().incorrect;
   $scope.loggedIn = function() {
     return UserSession.loggedIn();
   };
@@ -1180,21 +1179,25 @@ CURRENCY_NAMES = {
 };
 
 'use strict';
-angular.module('BI.directives', []).directive('gryft', function() {
+angular.module('BI.directives', []).directive('savedForm', function($timeout) {
   return {
-    restrict: 'A',
     scope: {
-      meta: '='
+      formData: '='
     },
-    template: '<h4>{{creator}}</h4>' + '<span class="price">{{price}}</span>' + '<img class="img-rounded col-xs-12 clearfix" src="{{src}}"/>',
     link: function($scope, element, attrs) {
-      var meta;
-      meta = $scope.meta;
-      if (meta._id) {
-        $scope.src = "" + gryfter_constants.gryft_base + meta._id + ".jpg";
-        $scope.creator = meta.creator;
-        return $scope.price = meta.price || 'no price';
-      }
+      return $timeout(function() {
+        var input, inputs, type, _i, _len;
+        inputs = element.find('input');
+        for (_i = 0, _len = inputs.length; _i < _len; _i++) {
+          input = inputs[_i];
+          input = angular.element(input);
+          type = input.attr('type');
+          if (type === 'text' || type === 'password') {
+            $scope.formData[input.attr('name')] = input.val();
+          }
+        }
+        return $scope.$apply();
+      }, 100);
     }
   };
 }).directive('positiveNumber', function() {
@@ -1253,16 +1256,18 @@ angular.module('BI.directives', []).directive('gryft', function() {
     }
   };
 }).directive('resizable', function($window) {
-  return function($scope, $element) {
-    $scope.initializeElementSize = function() {
-      $scope.elementHeight = $element.innerHeight;
-      return $scope.elementWidth = $element.innerWidth;
-    };
-    $scope.initializeElementSize();
-    return angular.element($window).bind('resize', function() {
+  return {
+    link: function($scope, $element) {
+      $scope.initializeElementSize = function() {
+        $scope.elementHeight = $element.innerHeight;
+        return $scope.elementWidth = $element.innerWidth;
+      };
       $scope.initializeElementSize();
-      return $scope.$apply();
-    });
+      return angular.element($window).bind('resize', function() {
+        $scope.initializeElementSize();
+        return $scope.$apply();
+      });
+    }
   };
 }).directive('tagManager', function() {
   return {

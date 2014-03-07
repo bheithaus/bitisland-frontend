@@ -3,27 +3,30 @@
 # /* Directives */
 angular.module 'BI.directives', []
 
-.directive 'gryft', 
-  () ->
-    restrict: 'A'
-    scope: { meta: '=' }
-    template: '<h4>{{creator}}</h4>'+
-    '<span class="price">{{price}}</span>'+ 
-    '<img class="img-rounded col-xs-12 clearfix" src="{{src}}"/>'
+# TODO, I would like to open source this (maybe just as a GIST)
+.directive 'savedForm', ($timeout) ->
+  scope:
+    formData: '='
 
-    link: ($scope, element, attrs) ->
-      meta = $scope.meta
-      if meta._id
-        $scope.src = "#{ gryfter_constants.gryft_base }#{ meta._id }.jpg"
-        $scope.creator = meta.creator
-        $scope.price = meta.price || 'no price'
+  link: ($scope, element, attrs) ->
+    $timeout () -> 
+      inputs = element.find 'input'
 
-.directive 'positiveNumber',  () ->
+      for input in inputs
+        input = angular.element input
+        type = input.attr 'type' 
+        if type is 'text' or type is 'password'
+          $scope.formData[input.attr 'name'] = input.val()
+
+      $scope.$apply()
+    , 100
+
+.directive 'positiveNumber',  ->
   link: ($scope, elm, attrs, ctrl) ->
     $scope.$watch attrs.ngModel, (newVal) ->
       $scope[attrs.ngModel] = 0 if newVal < 0
 
-.directive 'chart',  () ->
+.directive 'chart', ->
   restrict: 'E'
   template: '<div></div>'
   scope: { chartData: "=value" }
@@ -70,7 +73,7 @@ angular.module 'BI.directives', []
 
 
 .directive 'resizable', ($window) ->
-  ($scope, $element) ->
+  link: ($scope, $element) ->
     $scope.initializeElementSize = ->
       $scope.elementHeight = $element.innerHeight
       $scope.elementWidth  = $element.innerWidth
@@ -83,7 +86,7 @@ angular.module 'BI.directives', []
 
 
 
-.directive 'tagManager', () ->
+.directive 'tagManager', ->
     restrict: 'E'
     scope: { tags: '=' }
     template:
