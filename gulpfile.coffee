@@ -1,6 +1,8 @@
 includeG = (module) -> 
   require 'gulp-' + module
 
+env = 'development'
+
 # Requires
 gulp = require 'gulp'
 nodemon = require 'nodemon'
@@ -22,9 +24,7 @@ vendor_js =
       'angular-ui-router/release/angular-ui-router.js'
       'angular-cookies/angular-cookies.js'
       'angular-resource/angular-resource.js'
-
-      'jquery/dist/jquery.min.js'
-      # 'bootstrap/dist/js/bootstrap.js'
+      'jquery/dist/jquery.js'
       'lodash/dist/lodash.js'
       'socket.io/socket.io.js"'
     ]
@@ -63,29 +63,35 @@ path =
     dest: 'public/stylesheets'
 
 # Functions
-scripts = () ->
+scripts = ->
   gulp.src path.scripts.src.client
     .pipe coffee({ bare: true })
     .on 'error', gutil.log 
     .pipe concat 'index.js'
     .pipe gulp.dest(path.scripts.dest)
 
+  # minify
+  gulp.src vendor_js.bower.dependencies.concat vendor_js.vendor.dependencies
+    .pipe uglify()
+    .pipe concat('vendor.min.js')
+    .pipe gulp.dest(path.scripts.dest)
+
+  # un-minified, dev
   gulp.src vendor_js.bower.dependencies.concat vendor_js.vendor.dependencies
     .pipe concat('vendor.js')
     .pipe gulp.dest(path.scripts.dest)
 
-styles = () ->
-  console.log 'compiling stylesheets..'
-  
+styles = ->  
   gulp.src path.styles.src
     .pipe stylus({ use: ['nib'] })
     .pipe concat('style.css') 
     .pipe gulp.dest(path.styles.dest)
 
-cdn = () ->
-  console.log 'run cdn upload'
+cdn = ->
+  console.log 'cdn upload'
   # needs API integration
   # rest.put 'https://storage101.dfw1.clouddrive.com/v1/CF_xer7_343/'
+  
   #   .headers 
   #     "ETag": "805120e285a7ed28f74024422fe3594"
   #     "Content-Type": "image/jpeg"
@@ -95,33 +101,45 @@ cdn = () ->
   #   .end (data) ->
   #     console.log 'result', data
 
+watch = ->
+  gulp.watch path.styles.src, ->
+    styles()
 
 # Tasks
 gulp.task 'scripts', scripts
 gulp.task 'styles', styles
 gulp.task 'cdn', cdn
-
-gulp.task 'watch', () ->
-  gulp.watch path.styles.src, () ->
-    styles()
-
-gulp.task 'cdn'
+gulp.task 'watch', watch
 
 
-gulp.task 'default', ['scripts', 'styles', 'cdn', 'watch']
+execAll = ->
+  scripts()
+  styles()
+  cdn()
+  watch()
+  start()
 
+# Development
+gulp.task 'default', execAll
+
+# Production
+gulp.task 'production', ->
+  env = 'production'
+  execAll()
 
 # You can minify your Jade Templates here
-# 
+
 # gulp.task 'jade', ->
 #   gulp.src './views/*.jade'
 #     .pipe(jade())
 #     .pipe(gulp.dest('./build/minified_templates'))
 
-
-nodemon(
-  script: 'app.coffee'
-).on('restart', ->
-  scripts()
-  styles()
-)
+start = ->
+  nodemon(
+    script: 'app.coffee'
+    env:
+      NODE_ENV: env
+  ).on('restart', ->
+    scripts()
+    styles()
+  )

@@ -1,4 +1,5 @@
-{  "watch": [
+{  
+  "watch": [
     "/app.coffee",
     "/gulpfile.coffee"
     "/client/stylesheets/main.styl",
@@ -6,5 +7,9 @@
     "/route_map.coffee",
     "/routes/*",
     "/library/*"
+  ],
+  "ignore": [
+    "public/*"
   ]
+
 }

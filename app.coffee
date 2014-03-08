@@ -10,7 +10,6 @@ mongoose = require 'mongoose'
 library = require './library'
 socket = library.socket
 
-GLOBAL.config = require './config'
 
 # fake
 # privateKey  = fs.readFileSync 'sslcert/server.key', 'utf8'
@@ -19,8 +18,9 @@ GLOBAL.config = require './config'
 #   key: privateKey
 #   cert: certificate
 
-db = mongoose.connect config.db
 app = express()
+GLOBAL.config = require('./config')(app)
+db = mongoose.connect config.db
 
 # helper
 paths =

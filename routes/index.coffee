@@ -7,5 +7,7 @@ module.exports =
     res.render 'index', { 
       title: 'BitIsland'
       user: req.user
+      dependencies:
+        scripts: config.dependencies.scripts()
     }
 
