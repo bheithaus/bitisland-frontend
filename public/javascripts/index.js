@@ -158,10 +158,7 @@ angular.module('BI.controllers').controller('ListCtrl', function($scope, $http, 
 angular.module('BI.controllers').controller('LoginInstanceCtrl', function($scope, $modalInstance, Auth, $state) {
   $scope.user = {};
   $scope.login = function() {
-    return Auth.login('password', {
-      name: $scope.user.name,
-      password: $scope.user.password
-    }, function(error) {
+    return Auth.login('password', $scope.user, function(error) {
       if (!error) {
         $modalInstance.dismiss();
         return $state.transitionTo('trade');
@@ -170,8 +167,21 @@ angular.module('BI.controllers').controller('LoginInstanceCtrl', function($scope
       }
     });
   };
-  return $scope.cancel = function() {
+  $scope.cancel = function() {
     return $modalInstance.dismiss('cancel');
+  };
+  return $scope.guestLogin = function() {
+    return Auth.login('password', {
+      name: 'guest',
+      password: 'guest'
+    }, function(error) {
+      if (!error) {
+        $modalInstance.dismiss();
+        return $state.transitionTo('trade');
+      } else {
+        return $scope.error = error;
+      }
+    });
   };
 }).controller('LoginCtrl', function(LoginModal) {
   return LoginModal.open();

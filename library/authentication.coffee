@@ -73,7 +73,12 @@ module.exports =
     res.json req.user
 
   login: (req, res, next) ->
-    console.log req.body
+    if req.body.name is 'guest'
+      return loginUser(
+        name: 'guest'
+        email: 'guest'
+        id: 'guest'
+      , res)
 
 
     User.findOne { name: req.body.name }, (err, user) -> 

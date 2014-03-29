@@ -103,7 +103,8 @@ cdn = ->
 
 watch = ->
   gulp.watch path.styles.src, ->
-    styles()
+    # styles()
+  	''
 
 # Tasks
 gulp.task 'scripts', scripts
