@@ -1,7 +1,7 @@
 module.exports = (app) ->
   env = app.get('env')
 
-  # return 
+  # return
   db: 'mongodb://localhost/bitisland-dev'
   JWT_Token: 'SUPER_SECRET_TOKEN'
   dependencies:
@@ -11,9 +11,9 @@ module.exports = (app) ->
       else ''
 
       [
-        "http://code.angularjs.org/1.2.2/angular#{min}.js"
         "/javascripts/vendor#{min}.js"
-        "/socket.io/socket.io.js"
+        "http://code.angularjs.org/1.2.2/angular#{min}.js"
         "http://code.highcharts.com/stock/highstock.js"
+        "/socket.io/socket.io.js"
         "/javascripts/index.js"
       ]

@@ -1,4 +1,4 @@
-includeG = (module) -> 
+includeG = (module) ->
   require 'gulp-' + module
 
 env = 'development'
@@ -17,7 +17,7 @@ concat = includeG 'concat'
 rest = require 'unirest'
 
 # Paths
-vendor_js = 
+vendor_js =
   bower:
     base: './bower_components/'
     dependencies: [
@@ -43,8 +43,8 @@ for namespace, obj of vendor_js
     obj.dependencies[i] = "#{ obj.base }#{ lib }"
 
 client_base = './client/coffeescripts/'
-path = 
-  scripts: 
+path =
+  scripts:
     src: {
       client:[
         client_base + 'config/*.coffee'
@@ -66,7 +66,7 @@ path =
 scripts = ->
   gulp.src path.scripts.src.client
     .pipe coffee({ bare: true })
-    .on 'error', gutil.log 
+    .on 'error', gutil.log
     .pipe concat 'index.js'
     .pipe gulp.dest(path.scripts.dest)
 
@@ -81,18 +81,18 @@ scripts = ->
     .pipe concat('vendor.js')
     .pipe gulp.dest(path.scripts.dest)
 
-styles = ->  
+styles = ->
   gulp.src path.styles.src
     .pipe stylus({ use: ['nib'] })
-    .pipe concat('style.css') 
+    .pipe concat('style.css')
     .pipe gulp.dest(path.styles.dest)
 
 cdn = ->
   console.log 'cdn upload'
   # needs API integration
   # rest.put 'https://storage101.dfw1.clouddrive.com/v1/CF_xer7_343/'
-  
-  #   .headers 
+
+  #   .headers
   #     "ETag": "805120e285a7ed28f74024422fe3594"
   #     "Content-Type": "image/jpeg"
   #     "X-Auth-Token": "fc81aaa6-98a1-9ab0-94ba-aba9a89aa9ae"
@@ -141,6 +141,6 @@ start = ->
     env:
       NODE_ENV: env
   ).on('restart', ->
-    scripts()
-    styles()
+    # scripts()
+    # styles()
   )

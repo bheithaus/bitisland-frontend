@@ -1,12 +1,12 @@
-{  
+{
   "watch": [
-    "/app.coffee",
-    "/gulpfile.coffee"
-    "/client/stylesheets/main.styl",
-    "/client/coffeescripts/*",
-    "/route_map.coffee",
-    "/routes/*",
-    "/library/*"
+    // "/app.coffee",
+    // "/gulpfile.coffee"
+    // "/client/stylesheets/main.styl",
+    // "/client/coffeescripts/*",
+    // "/route_map.coffee",
+    // "/routes/*",
+    // "/library/*"
   ],
   "ignore": [
     "public/*"
