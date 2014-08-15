@@ -14,7 +14,7 @@ socket = library.socket
 # fake
 # privateKey  = fs.readFileSync 'sslcert/server.key', 'utf8'
 # certificate = fs.readFileSync 'sslcert/server.crt', 'utf8'
-# credentials = 
+# credentials =
 #   key: privateKey
 #   cert: certificate
 
@@ -28,7 +28,7 @@ paths =
   public: express.static path.join(__dirname, '/public')
 
 #  all environments
-app.set 'port', process.env.PORT || 3000
+app.set 'port', process.env.PORT || 5000
 app.set 'views', path.join(__dirname, '/views')
 app.set 'view engine', 'jade'
 
