@@ -11,8 +11,8 @@ module.exports = (app) ->
       else ''
 
       [
-        "/javascripts/vendor#{min}.js"
         "http://code.angularjs.org/1.2.2/angular#{min}.js"
+        "/javascripts/vendor#{min}.js"
         "http://code.highcharts.com/stock/highstock.js"
         "/socket.io/socket.io.js"
         "/javascripts/index.js"
